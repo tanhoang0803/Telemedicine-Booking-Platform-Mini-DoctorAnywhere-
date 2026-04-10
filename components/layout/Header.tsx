@@ -1,20 +1,22 @@
-// components/layout/Header.tsx — Site Header with navigation and language switcher
-
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
+import { Link, useRouter, usePathname } from '@/i18n/navigation'
 
-const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/doctors', label: 'Doctors' },
-  { href: '/booking', label: 'Book Appointment' },
-  { href: '/portal', label: 'Portal' },
-  { href: '/contact', label: 'Contact' },
-]
+const NAV_KEYS = ['home', 'doctors', 'booking', 'portal', 'contact'] as const
+const NAV_HREFS = ['/', '/doctors', '/booking', '/portal', '/contact'] as const
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const t = useTranslations('nav')
+  const locale = useLocale()
+  const router = useRouter()
+  const pathname = usePathname()
+
+  function switchLocale(next: string) {
+    router.replace(pathname, { locale: next })
+  }
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
@@ -26,22 +28,34 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">
-          {NAV_LINKS.map((link) => (
+          {NAV_KEYS.map((key, i) => (
             <Link
-              key={link.href}
-              href={link.href}
+              key={key}
+              href={NAV_HREFS[i]}
               className="hover:text-blue-600 transition"
             >
-              {link.label}
+              {t(key)}
             </Link>
           ))}
         </nav>
 
-        {/* Language switcher — Phase 1 placeholder */}
-        <div className="hidden md:flex items-center gap-2 text-sm">
-          <button className="text-blue-600 font-medium">EN</button>
+        {/* Language switcher */}
+        <div className="hidden md:flex items-center gap-2 text-sm font-medium">
+          <button
+            onClick={() => switchLocale('en')}
+            className={locale === 'en' ? 'text-blue-600' : 'text-gray-400 hover:text-blue-600'}
+            aria-label="Switch to English"
+          >
+            EN
+          </button>
           <span className="text-gray-300">|</span>
-          <button className="text-gray-500 hover:text-blue-600">VI</button>
+          <button
+            onClick={() => switchLocale('vi')}
+            className={locale === 'vi' ? 'text-blue-600' : 'text-gray-400 hover:text-blue-600'}
+            aria-label="Chuyển sang tiếng Việt"
+          >
+            VI
+          </button>
         </div>
 
         {/* Mobile menu button */}
@@ -56,18 +70,35 @@ export default function Header() {
 
       {/* Mobile nav */}
       {mobileOpen && (
-        <nav className="md:hidden bg-white border-t border-gray-100 px-4 py-3 flex flex-col gap-3 text-sm text-gray-600">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="hover:text-blue-600 transition"
-              onClick={() => setMobileOpen(false)}
+        <div className="md:hidden bg-white border-t border-gray-100 px-4 py-3 flex flex-col gap-3">
+          <nav className="flex flex-col gap-3 text-sm text-gray-600">
+            {NAV_KEYS.map((key, i) => (
+              <Link
+                key={key}
+                href={NAV_HREFS[i]}
+                className="hover:text-blue-600 transition"
+                onClick={() => setMobileOpen(false)}
+              >
+                {t(key)}
+              </Link>
+            ))}
+          </nav>
+          <div className="flex items-center gap-3 pt-2 border-t border-gray-100 text-sm font-medium">
+            <button
+              onClick={() => { switchLocale('en'); setMobileOpen(false) }}
+              className={locale === 'en' ? 'text-blue-600' : 'text-gray-400'}
             >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+              English
+            </button>
+            <span className="text-gray-300">|</span>
+            <button
+              onClick={() => { switchLocale('vi'); setMobileOpen(false) }}
+              className={locale === 'vi' ? 'text-blue-600' : 'text-gray-400'}
+            >
+              Tiếng Việt
+            </button>
+          </div>
+        </div>
       )}
     </header>
   )

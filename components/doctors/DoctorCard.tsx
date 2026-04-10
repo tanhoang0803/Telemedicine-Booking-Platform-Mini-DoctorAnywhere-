@@ -1,29 +1,20 @@
-// components/doctors/DoctorCard.tsx — Doctor profile card
 'use client'
 
-import Link from 'next/link'
-
-interface Doctor {
-  id: string
-  name: string
-  specialty: string
-  bio: string
-  photo: string
-  availableDays: string[]
-  languages: ('vi' | 'en')[]
-  rating: number
-}
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import type { Doctor } from '@/lib/doctors'
 
 interface DoctorCardProps {
   doctor: Doctor
 }
 
 export default function DoctorCard({ doctor }: DoctorCardProps) {
+  const t = useTranslations('doctors')
+
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition">
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-100 flex-shrink-0">
-          {/* Plain img for Phase 1 — switch to next/image in Phase 3 with real CMS photos */}
           <img
             src={doctor.photo || '/images/doctor-placeholder.svg'}
             alt={doctor.name}
@@ -69,7 +60,7 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
           href={`/booking?doctorId=${doctor.id}`}
           className="ml-auto bg-blue-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-blue-700 transition"
         >
-          Book
+          {t('book_button')}
         </Link>
       </div>
     </div>

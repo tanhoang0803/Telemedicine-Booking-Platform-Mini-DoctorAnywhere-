@@ -1,20 +1,25 @@
-// components/booking/BookingForm.tsx — Booking form with Formspree integration (Phase 1)
-
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
-export default function BookingForm() {
+interface BookingFormProps {
+  doctorId?: string
+}
+
+export default function BookingForm({ doctorId }: BookingFormProps) {
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const t = useTranslations('booking')
 
   const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setError('')
 
     if (!formspreeId) {
-      setError('Booking service is not configured. Please contact us directly.')
+      setError(t('error_not_configured'))
       return
     }
 
@@ -32,20 +37,18 @@ export default function BookingForm() {
         setSubmitted(true)
         form.reset()
       } else {
-        setError('Submission failed. Please try again or contact us directly.')
+        setError(t('error_submission'))
       }
     } catch {
-      setError('Network error. Please check your connection and try again.')
+      setError(t('error_network'))
     }
   }
 
   if (submitted) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-        <p className="text-green-700 font-semibold text-lg">Appointment request sent!</p>
-        <p className="text-green-600 text-sm mt-1">
-          We will confirm your appointment by email within 24 hours.
-        </p>
+        <p className="text-green-700 font-semibold text-lg">{t('success_title')}</p>
+        <p className="text-green-600 text-sm mt-1">{t('success_message')}</p>
       </div>
     )
   }
@@ -53,10 +56,11 @@ export default function BookingForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <input type="hidden" name="_subject" value="New Appointment Booking — Mini-DoctorAnywhere" />
+      {doctorId && <input type="hidden" name="doctorId" value={doctorId} />}
 
       <div>
         <label htmlFor="patientName" className="block text-sm font-medium text-gray-700 mb-1">
-          Full Name <span className="text-red-500">*</span>
+          {t('patient_name')} <span className="text-red-500">*</span>
         </label>
         <input
           id="patientName"
@@ -64,13 +68,13 @@ export default function BookingForm() {
           type="text"
           required
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Your full name"
+          placeholder={t('patient_name')}
         />
       </div>
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-          Email Address <span className="text-red-500">*</span>
+          {t('email')} <span className="text-red-500">*</span>
         </label>
         <input
           id="email"
@@ -84,7 +88,7 @@ export default function BookingForm() {
 
       <div>
         <label htmlFor="preferredDate" className="block text-sm font-medium text-gray-700 mb-1">
-          Preferred Date <span className="text-red-500">*</span>
+          {t('preferred_date')} <span className="text-red-500">*</span>
         </label>
         <input
           id="preferredDate"
@@ -98,43 +102,41 @@ export default function BookingForm() {
 
       <div>
         <label htmlFor="specialty" className="block text-sm font-medium text-gray-700 mb-1">
-          Specialty Needed
+          {t('specialty')}
         </label>
         <select
           id="specialty"
           name="specialty"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="">Select a specialty</option>
-          <option value="general">General Practitioner</option>
-          <option value="pediatrics">Pediatrics</option>
-          <option value="cardiology">Cardiology</option>
-          <option value="dermatology">Dermatology</option>
+          <option value="">{t('specialty')}</option>
+          <option value="general">{t('specialty_general')}</option>
+          <option value="pediatrics">{t('specialty_pediatrics')}</option>
+          <option value="cardiology">{t('specialty_cardiology')}</option>
+          <option value="dermatology">{t('specialty_dermatology')}</option>
         </select>
       </div>
 
       <div>
         <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-          Notes / Symptoms
+          {t('notes')}
         </label>
         <textarea
           id="notes"
           name="notes"
           rows={3}
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-          placeholder="Briefly describe your symptoms or reason for consultation..."
+          placeholder={t('notes_placeholder')}
         />
       </div>
 
-      {error && (
-        <p className="text-red-600 text-sm">{error}</p>
-      )}
+      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <button
         type="submit"
         className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition"
       >
-        Request Appointment
+        {t('submit')}
       </button>
     </form>
   )
