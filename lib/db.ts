@@ -1,37 +1,26 @@
-// lib/db.ts — MongoDB Atlas connection (Phase 2)
-// Uses a cached connection to avoid creating multiple connections in Next.js dev mode.
-
-import { MongoClient, Db } from 'mongodb'
-
-const uri = process.env.MONGODB_URI
-
-if (!uri) {
-  throw new Error('MONGODB_URI environment variable is not set. Add it to .env.local.')
-}
-
-let client: MongoClient
-let clientPromise: Promise<MongoClient>
+// lib/db.ts — MongoDB Atlas connection (lazy — does not throw on module load)
+import { MongoClient, type Db } from 'mongodb'
 
 declare global {
-  // Allow global caching in development to prevent connection exhaustion
   // eslint-disable-next-line no-var
   var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
-if (process.env.NODE_ENV === 'development') {
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri)
-    global._mongoClientPromise = client.connect()
+function getClientPromise(): Promise<MongoClient> {
+  const uri = process.env.MONGODB_URI
+  if (!uri) throw new Error('MONGODB_URI is not set. Add it to .env.local.')
+
+  if (process.env.NODE_ENV === 'development') {
+    if (!global._mongoClientPromise) {
+      global._mongoClientPromise = new MongoClient(uri).connect()
+    }
+    return global._mongoClientPromise
   }
-  clientPromise = global._mongoClientPromise
-} else {
-  client = new MongoClient(uri)
-  clientPromise = client.connect()
+
+  return new MongoClient(uri).connect()
 }
 
 export async function getDb(): Promise<Db> {
-  const connectedClient = await clientPromise
-  return connectedClient.db('telemedicine')
+  const client = await getClientPromise()
+  return client.db('telemedicine')
 }
-
-export default clientPromise

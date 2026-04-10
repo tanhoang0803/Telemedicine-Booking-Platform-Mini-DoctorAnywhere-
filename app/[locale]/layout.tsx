@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import { UserProvider } from '@/components/auth/UserContext'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -30,9 +31,11 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <Header />
-      <div className="flex-1">{children}</div>
-      <Footer />
+      <UserProvider>
+        <Header />
+        <div className="flex-1">{children}</div>
+        <Footer />
+      </UserProvider>
     </NextIntlClientProvider>
   )
 }
