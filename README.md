@@ -4,16 +4,16 @@ A free, bilingual (Vietnamese/English) telemedicine platform that enables patien
 
 **Author:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
-**Current phase:** Phase 1 complete — static MVP with bilingual support
+**Current phase:** Phase 1 complete — app running locally, ready for Vercel deployment
 
 ---
 
 ## Live Features (Phase 1)
 
-- **Bilingual UI** — Full Vietnamese / English with live switcher (EN | VI) in the header
+- **Bilingual UI** — Full Vietnamese / English with live EN | VI switcher in the header
 - **Doctor Directory** — 5 mock doctor profiles with specialties, availability, ratings, and language badges
-- **Appointment Booking** — Form with Formspree integration; pre-fills doctor when coming from directory
-- **Locale Routing** — All pages available at `/en/...` and `/vi/...`; middleware auto-detects and redirects
+- **Appointment Booking** — Formspree form; pre-fills doctor when coming from the directory
+- **Locale Routing** — All pages at `/en/...` and `/vi/...`; middleware auto-detects and redirects
 - **Responsive Layout** — Mobile-first with collapsible navigation
 
 ---
@@ -25,13 +25,13 @@ A free, bilingual (Vietnamese/English) telemedicine platform that enables patien
 | Framework  | Next.js 14.2 (App Router)                           | ✅ Active     |
 | Styling    | Tailwind CSS 3.4                                    | ✅ Active     |
 | i18n       | next-intl 4.9 (locale routing, SSG)                 | ✅ Active     |
-| Forms      | Formspree                                           | ✅ Phase 1    |
+| Forms      | Formspree (`xwvwdqvp`)                              | ✅ Configured |
 | Auth       | JWT (jose) + bcrypt                                 | ⏳ Phase 2    |
 | Database   | MongoDB Atlas (Free Tier)                           | ⏳ Phase 2    |
 | Email      | Resend                                              | ⏳ Phase 2    |
 | CMS        | Contentful                                          | ⏳ Phase 3    |
 | Video      | WebRTC                                              | ⏳ Phase 3    |
-| Hosting    | Vercel (Free Tier)                                  | ✅ Active     |
+| Hosting    | Vercel (Free Tier)                                  | ⏳ Deploy next |
 
 ---
 
@@ -56,11 +56,11 @@ npm install
 cp .env.example .env.local
 ```
 
-Minimum required for Phase 1 (dev server):
+Minimum required for Phase 1:
 
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_FORMSPREE_ID=your-formspree-form-id   # get from formspree.io
+NEXT_PUBLIC_FORMSPREE_ID=xwvwdqvp
 ```
 
 Full variable reference: see `.env.example`.
@@ -80,6 +80,7 @@ Open [http://localhost:3000](http://localhost:3000) — redirects automatically 
 | `/en/doctors` | Doctor directory |
 | `/en/booking?doctorId=1` | Booking form pre-filled for doctor 1 |
 | `/en/portal` | Patient portal (Phase 2 placeholder) |
+| `/en/contact` | Contact page |
 
 ---
 
@@ -96,8 +97,7 @@ telemedicine-booking/
 │   ├── hooks/                        # preCommit.md, postDeploy.md
 │   └── settings.json                 # Claude Code permissions and hooks
 ├── .env.example                      # Environment variable template
-├── .gitignore
-├── .gitattributes                    # LF normalization
+├── .gitignore / .gitattributes
 ├── .github/
 │   ├── workflows/deploy.yml          # Vercel CI/CD pipeline
 │   └── CODEOWNERS                    # Restricts all PRs to @TanQHoang
@@ -107,10 +107,10 @@ telemedicine-booking/
 │   └── navigation.ts                 # Locale-aware Link, useRouter, usePathname
 ├── middleware.ts                     # next-intl locale detection + redirect
 ├── app/
-│   ├── layout.tsx                    # Minimal root layout (html/body in [locale])
+│   ├── layout.tsx                    # Root layout — owns <html>, <body>, Inter font
 │   ├── globals.css                   # Tailwind directives + base styles
 │   ├── [locale]/                     # All user-facing routes (en | vi)
-│   │   ├── layout.tsx                # html lang, Inter font, Provider, Header/Footer
+│   │   ├── layout.tsx                # NextIntlClientProvider, Header, Footer
 │   │   ├── page.tsx                  # Home
 │   │   ├── booking/page.tsx          # Booking form (reads ?doctorId)
 │   │   ├── doctors/page.tsx          # Doctor directory
@@ -118,28 +118,22 @@ telemedicine-booking/
 │   │   ├── contact/page.tsx          # Contact
 │   │   ├── loading.tsx               # Spinner
 │   │   └── not-found.tsx             # 404
-│   ├── booking/page.tsx              # Redirect → /en/booking (middleware catches first)
-│   ├── doctors/page.tsx              # Redirect → /en/doctors
-│   ├── portal/page.tsx               # Redirect → /en/portal
-│   └── contact/page.tsx              # Redirect → /en/contact
+│   └── {booking,doctors,portal,contact}/page.tsx  # /en/* redirects
 ├── components/
-│   ├── layout/
-│   │   ├── Header.tsx                # Nav + EN/VI live switcher
-│   │   └── Footer.tsx
-│   ├── booking/
-│   │   ├── BookingForm.tsx           # Formspree + useTranslations
-│   │   └── BookingCalendar.tsx       # Date picker (Phase 2: availability calendar)
-│   └── doctors/
-│       └── DoctorCard.tsx            # Profile card with locale-aware Book link
+│   ├── layout/Header.tsx             # Nav + EN/VI live switcher
+│   ├── layout/Footer.tsx             # Locale-aware links
+│   ├── booking/BookingForm.tsx       # Formspree + useTranslations + doctorId
+│   ├── booking/BookingCalendar.tsx   # Date picker (Phase 2: availability)
+│   └── doctors/DoctorCard.tsx        # Profile card + locale-aware Book link
 ├── lib/
-│   ├── doctors.ts                    # Doctor type + Phase 1 mock data
+│   ├── doctors.ts                    # Doctor type + 5 mock doctors
 │   ├── db.ts                         # MongoDB connection (Phase 2)
 │   └── auth.ts                       # JWT utilities (Phase 2)
 ├── locales/
 │   ├── en.json                       # English translations (40+ keys)
 │   └── vi.json                       # Vietnamese translations (synced)
 └── public/images/
-    └── doctor-placeholder.svg        # Avatar placeholder
+    └── doctor-placeholder.svg
 ```
 
 ---
@@ -147,89 +141,89 @@ telemedicine-booking/
 ## Roadmap
 
 ### Phase 0 — Project Foundation ✅
-- [x] `package.json`, `next.config.mjs`, `tsconfig.json`
-- [x] `tailwind.config.ts`, `postcss.config.mjs`, `.eslintrc.json`
-- [x] `app/layout.tsx`, `app/globals.css`, `app/loading.tsx`, `app/not-found.tsx`
+- [x] `package.json`, `next.config.mjs`, `tsconfig.json`, `tailwind.config.ts`
+- [x] `app/layout.tsx` (root — owns `<html>`, `<body>`), `globals.css`
 - [x] `.gitattributes`, `.gitignore`, `.env.example`
-- [x] `.claude/settings.json` — permissions + hooks
-- [x] `.github/workflows/deploy.yml`, `.github/CODEOWNERS`
-- [x] Build passes: `npm run build` ✓
+- [x] `.claude/settings.json`, `.github/workflows/deploy.yml`, `CODEOWNERS`
+- [x] `npm run build` passes — 0 errors
 
 ### Phase 1 — Static MVP ✅
 - [x] `next-intl` v4 — locale routing (`/en/...`, `/vi/...`)
-- [x] `middleware.ts` — auto-detect and redirect to locale
-- [x] `i18n/routing.ts`, `request.ts`, `navigation.ts`
-- [x] `app/[locale]/layout.tsx` — `html lang`, `NextIntlClientProvider`
-- [x] All 5 pages translated (home, doctors, booking, portal, contact)
-- [x] Header — live EN/VI switcher stays on current path
-- [x] `BookingForm` — `useTranslations` + Formspree + `doctorId` pre-fill
+- [x] `middleware.ts`, `i18n/routing.ts`, `request.ts`, `navigation.ts`
+- [x] `app/[locale]/layout.tsx` — Provider, Header, Footer (no duplicate html/body)
+- [x] All 5 pages with full translations (en + vi)
+- [x] Header — live EN/VI switcher, stays on current path
+- [x] `BookingForm` — Formspree (`xwvwdqvp`) + `doctorId` pre-fill
 - [x] `DoctorCard` — locale-aware Book button
 - [x] 5 mock doctors in `lib/doctors.ts`
-- [x] `doctor-placeholder.svg`
+- [x] White-page bug fixed — root layout owns `<html>`/`<body>`
 - [x] Build: 18 static pages (en + vi × 5), 0 errors
-- [ ] **1.7** Set `NEXT_PUBLIC_FORMSPREE_ID` and test booking email end-to-end
-- [ ] **1.8** Deploy to Vercel — connect repo, add env vars, verify live site
+- [x] `NEXT_PUBLIC_FORMSPREE_ID` configured in `.env.local`
+- [ ] **Next** → Test booking form end-to-end (submit → receive email)
+- [ ] **Next** → Deploy to Vercel
 
 ### Phase 2 — Database & Patient Portal ⏳ Month 1–2
-- [ ] MongoDB Atlas cluster + `lib/db.ts` connection verified
+- [ ] MongoDB Atlas cluster + connection test
 - [ ] Patient register / login / logout API routes
-- [ ] JWT middleware protecting `/portal/*`
-- [ ] `app/[locale]/login/page.tsx`, `app/[locale]/register/page.tsx`
+- [ ] JWT session middleware for `/portal/*`
+- [ ] Login + Register pages
 - [ ] Appointments API (`POST`, `GET`, `DELETE`)
-- [ ] Patient portal — dashboard, profile, history
-- [ ] Replace `BookingForm` Formspree → `POST /api/appointments`
-- [ ] Resend email — booking confirmation (bilingual)
-- [ ] Zod validation on all API request bodies
-- [ ] Rate limiting on login endpoint
+- [ ] Patient portal dashboard, profile, history
+- [ ] BookingForm → `POST /api/appointments` (replace Formspree)
+- [ ] Resend email — bilingual booking confirmation
+- [ ] Zod input validation on all API routes
+- [ ] Rate limiting on `/api/auth/login`
 
 ### Phase 3 — Advanced Features ⏳ Month 3–4
-- [ ] Contentful CMS — doctor profiles + blog articles
+- [ ] Contentful CMS — doctor profiles + blog
 - [ ] ISR on doctor pages (`revalidate: 3600`)
 - [ ] WebRTC video consultation room
 - [ ] Vercel Analytics
-- [ ] `app/sitemap.ts`, `app/robots.ts`
-- [ ] `generateMetadata()` on all pages (SEO)
+- [ ] Sitemap, robots.txt, `generateMetadata()` on all pages
 - [ ] Lighthouse score ≥ 90
 
 ---
 
 ## Deployment
 
-CI/CD via GitHub Actions + Vercel. Pushes to `main` auto-deploy to production.
+Pushes to `main` auto-deploy to Vercel via GitHub Actions.
 
-**Required secrets in Vercel dashboard:**
+**Vercel env vars to add:**
 
-```
-VERCEL_TOKEN
-VERCEL_ORG_ID
-VERCEL_PROJECT_ID
-NEXT_PUBLIC_APP_URL
-NEXT_PUBLIC_FORMSPREE_ID
-MONGODB_URI          (Phase 2)
-JWT_SECRET           (Phase 2)
-RESEND_API_KEY       (Phase 2)
-```
+| Variable | Phase | Value |
+|----------|-------|-------|
+| `NEXT_PUBLIC_APP_URL` | 1 | `https://your-project.vercel.app` |
+| `NEXT_PUBLIC_FORMSPREE_ID` | 1 | `xwvwdqvp` |
+| `MONGODB_URI` | 2 | MongoDB Atlas connection string |
+| `JWT_SECRET` | 2 | `openssl rand -base64 32` |
+| `RESEND_API_KEY` | 2 | From resend.com |
+
+---
+
+## Known Architecture Note
+
+Next.js App Router **requires** `<html>` and `<body>` in the root layout (`app/layout.tsx`).
+The `[locale]` layout must **not** repeat them — it wraps content with `NextIntlClientProvider`, `Header`, and `Footer` only.
 
 ---
 
 ## Security
 
-- JWT tokens stored in HttpOnly, Secure, SameSite=Strict cookies (Phase 2)
-- Passwords hashed with bcrypt (min 10 rounds)
-- All secrets in environment variables — never hardcoded
-- HTTPS enforced via Vercel
-- Input validated with Zod on all API endpoints (Phase 2)
-- `CODEOWNERS` — only `@TanQHoang` can merge PRs
+- JWT in HttpOnly, Secure, SameSite=Strict cookies — never localStorage (Phase 2)
+- bcrypt passwords (min 10 rounds) — `passwordHash` never returned in responses
+- All secrets in env vars — never hardcoded
+- HTTPS via Vercel
+- Zod validation on all API bodies (Phase 2)
+- `CODEOWNERS` — only `@TanQHoang` can merge
 
 ---
 
 ## Contributing
 
-**Single contributor: TanQHoang.** The `CODEOWNERS` file enforces this.
-External contributions are not accepted.
+**Single contributor: TanQHoang.** `CODEOWNERS` enforces this.
 
 ---
 
 ## License
 
-Private project — all rights reserved. Not open source.
+Private project — all rights reserved.
