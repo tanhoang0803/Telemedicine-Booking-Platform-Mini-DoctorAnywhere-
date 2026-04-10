@@ -1,7 +1,7 @@
 // components/doctors/DoctorCard.tsx — Doctor profile card
+'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface Doctor {
   id: string
@@ -22,15 +22,14 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition">
       <div className="flex items-center gap-4">
-        <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-          <Image
-            src={doctor.photo}
+        <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-100 flex-shrink-0">
+          {/* Plain img for Phase 1 — switch to next/image in Phase 3 with real CMS photos */}
+          <img
+            src={doctor.photo || '/images/doctor-placeholder.svg'}
             alt={doctor.name}
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
             onError={(e) => {
-              // Fallback if image fails to load
-              ;(e.target as HTMLImageElement).style.display = 'none'
+              ;(e.target as HTMLImageElement).src = '/images/doctor-placeholder.svg'
             }}
           />
         </div>
