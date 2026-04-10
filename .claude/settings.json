@@ -1,0 +1,65 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+      "Bash(npm run test)",
+      "Bash(npm ci)",
+      "Bash(npm install *)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit*)",
+      "Bash(git push)",
+      "Bash(git pull)",
+      "Bash(vercel*)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git commit --no-verify*)",
+      "Bash(rm -rf *)",
+      "Bash(git rebase -i*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const c=process.env.CLAUDE_TOOL_INPUT||'{}';const t=JSON.parse(c);const cmd=t.command||'';if(/git commit(?!.*--no-verify)/.test(cmd)&&!/npm run lint/.test(cmd)){console.warn('\\u26a0 Reminder: Run npm run lint before committing.');}\"",
+            "blocking": false
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"try{const en=require('./locales/en.json');const vi=require('./locales/vi.json');const flat=(o,p='')=>Object.keys(o).flatMap(k=>typeof o[k]==='object'?flat(o[k],p+k+'.'):p+k);const ek=flat(en).sort();const vk=flat(vi).sort();const missing=ek.filter(k=>!vk.includes(k));const extra=vk.filter(k=>!ek.includes(k));if(missing.length)console.warn('\\u26a0 vi.json missing keys:',missing);if(extra.length)console.warn('\\u26a0 vi.json extra keys:',extra);}catch(e){}\"",
+            "blocking": false
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": ".*",
+        "hooks": []
+      }
+    ]
+  },
+  "env": {
+    "CLAUDE_PROJECT": "telemedicine-booking",
+    "CLAUDE_PHASE": "1"
+  }
+}

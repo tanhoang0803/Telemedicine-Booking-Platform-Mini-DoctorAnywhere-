@@ -1,0 +1,21 @@
+# ============================================================
+# CODEOWNERS — Telemedicine Booking Platform
+# ============================================================
+# Only TanQHoang may review and approve all pull requests.
+# This file enforces that rule via GitHub branch protection.
+#
+# To activate:
+#   1. Go to GitHub → Settings → Branches → main
+#   2. Enable "Require a pull request before merging"
+#   3. Enable "Require review from Code Owners"
+# ============================================================
+
+# All files — TanQHoang is the sole required reviewer
+* @TanQHoang
+
+# Critical configuration files — explicit ownership
+CLAUDE.md @TanQHoang
+README.md @TanQHoang
+.env.example @TanQHoang
+.github/ @TanQHoang
+.claude/ @TanQHoang

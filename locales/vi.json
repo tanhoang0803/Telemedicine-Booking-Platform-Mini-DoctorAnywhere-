@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "doctors": "Bác sĩ",
+    "booking": "Đặt lịch khám",
+    "portal": "Cổng bệnh nhân",
+    "contact": "Liên hệ"
+  },
+  "home": {
+    "title": "Nền tảng đặt lịch khám trực tuyến",
+    "subtitle": "Đặt lịch khám với bác sĩ có chuyên môn — nhanh chóng, an toàn và miễn phí.",
+    "cta_doctors": "Tìm bác sĩ",
+    "cta_booking": "Đặt lịch khám"
+  },
+  "doctors": {
+    "title": "Đội ngũ bác sĩ",
+    "subtitle": "Duyệt danh sách bác sĩ chuyên môn và đặt lịch tư vấn.",
+    "book_button": "Đặt lịch",
+    "available_days": "Ngày làm việc",
+    "rating": "Đánh giá"
+  },
+  "booking": {
+    "title": "Đặt lịch khám",
+    "subtitle": "Điền vào mẫu bên dưới và chúng tôi sẽ xác nhận lịch hẹn qua email.",
+    "patient_name": "Họ và tên",
+    "email": "Địa chỉ email",
+    "preferred_date": "Ngày ưu tiên",
+    "specialty": "Chuyên khoa cần tư vấn",
+    "specialty_general": "Bác sĩ đa khoa",
+    "specialty_pediatrics": "Nhi khoa",
+    "specialty_cardiology": "Tim mạch",
+    "specialty_dermatology": "Da liễu",
+    "notes": "Ghi chú / Triệu chứng",
+    "notes_placeholder": "Mô tả ngắn về triệu chứng hoặc lý do tư vấn...",
+    "submit": "Gửi yêu cầu đặt lịch",
+    "success_title": "Yêu cầu đặt lịch đã được gửi!",
+    "success_message": "Chúng tôi sẽ xác nhận lịch hẹn của bạn qua email trong vòng 24 giờ.",
+    "error_not_configured": "Dịch vụ đặt lịch chưa được cấu hình. Vui lòng liên hệ trực tiếp.",
+    "error_submission": "Gửi thất bại. Vui lòng thử lại hoặc liên hệ trực tiếp.",
+    "error_network": "Lỗi mạng. Vui lòng kiểm tra kết nối và thử lại."
+  },
+  "portal": {
+    "title": "Cổng bệnh nhân",
+    "subtitle": "Xem và quản lý lịch hẹn, cập nhật hồ sơ của bạn.",
+    "upcoming": "Lịch hẹn sắp tới",
+    "past": "Lịch hẹn đã qua",
+    "no_appointments": "Không tìm thấy lịch hẹn nào.",
+    "profile": "Hồ sơ của tôi",
+    "logout": "Đăng xuất",
+    "coming_soon": "Cổng bệnh nhân sẽ có trong Giai đoạn 2.",
+    "coming_soon_desc": "Xác thực và quản lý lịch hẹn sẽ sớm ra mắt."
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "logout": "Đăng xuất",
+    "email": "Địa chỉ email",
+    "password": "Mật khẩu",
+    "name": "Họ và tên",
+    "login_error": "Email hoặc mật khẩu không đúng.",
+    "register_error": "Không thể tạo tài khoản. Vui lòng thử lại."
+  },
+  "contact": {
+    "title": "Liên hệ",
+    "subtitle": "Có câu hỏi? Hãy liên hệ với đội ngũ của chúng tôi.",
+    "email_label": "Email",
+    "platform_label": "Nền tảng",
+    "response_label": "Thời gian phản hồi",
+    "response_time": "Trong vòng 24 giờ"
+  },
+  "footer": {
+    "rights": "Bảo lưu mọi quyền.",
+    "built_by": "Được xây dựng bởi"
+  },
+  "common": {
+    "required": "Bắt buộc",
+    "optional": "Tùy chọn",
+    "loading": "Đang tải...",
+    "error": "Đã xảy ra lỗi.",
+    "back": "Quay lại"
+  }
+}
