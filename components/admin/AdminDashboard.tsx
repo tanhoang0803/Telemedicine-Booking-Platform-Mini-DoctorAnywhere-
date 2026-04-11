@@ -15,20 +15,20 @@ interface Appointment {
 }
 
 const STATUS_STYLES = {
-  pending:   'bg-yellow-100 text-yellow-800',
-  confirmed: 'bg-green-100 text-green-800',
-  cancelled: 'bg-gray-100 text-gray-500',
+  pending:   { pill: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-200', dot: 'bg-yellow-400' },
+  confirmed: { pill: 'bg-green-50 text-green-700 ring-1 ring-green-200',   dot: 'bg-green-500'  },
+  cancelled: { pill: 'bg-gray-100 text-gray-500 ring-1 ring-gray-200',     dot: 'bg-gray-400'   },
 }
 
 const FILTERS = ['all', 'pending', 'confirmed', 'cancelled'] as const
 type Filter = typeof FILTERS[number]
 
-function AdminDashboard() {
+export default function AdminDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<Filter>('all')
+  const [filter, setFilter] = useState<Filter>('pending')
   const [updating, setUpdating] = useState<string | null>(null)
-  const [toast, setToast] = useState('')
+  const [toast, setToast] = useState({ msg: '', type: '' })
 
   const fetchAppointments = useCallback(async () => {
     try {
@@ -42,9 +42,7 @@ function AdminDashboard() {
     }
   }, [])
 
-  useEffect(() => {
-    fetchAppointments()
-  }, [fetchAppointments])
+  useEffect(() => { fetchAppointments() }, [fetchAppointments])
 
   async function updateStatus(id: string, status: 'confirmed' | 'cancelled') {
     setUpdating(id)
@@ -55,20 +53,14 @@ function AdminDashboard() {
         body: JSON.stringify({ status }),
       })
       if (res.ok) {
-        setAppointments((prev) =>
-          prev.map((a) => (a.id === id ? { ...a, status } : a))
-        )
-        setToast(`Appointment ${status}. Patient notified by email.`)
-        setTimeout(() => setToast(''), 4000)
+        setAppointments((prev) => prev.map((a) => a.id === id ? { ...a, status } : a))
+        setToast({ msg: `Appointment ${status}. Patient notified by email.`, type: status })
+        setTimeout(() => setToast({ msg: '', type: '' }), 4000)
       }
     } finally {
       setUpdating(null)
     }
   }
-
-  const filtered = filter === 'all'
-    ? appointments
-    : appointments.filter((a) => a.status === filter)
 
   const counts = {
     all:       appointments.length,
@@ -77,125 +69,135 @@ function AdminDashboard() {
     cancelled: appointments.filter((a) => a.status === 'cancelled').length,
   }
 
-  if (loading) {
-    return (
-      <div className="space-y-3">
-        {[1,2,3,4].map((i) => (
-          <div key={i} className="h-28 rounded-xl bg-gray-100 animate-pulse" />
-        ))}
-      </div>
-    )
-  }
+  const filtered = filter === 'all' ? appointments : appointments.filter((a) => a.status === filter)
 
   return (
     <div>
       {/* Toast */}
-      {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-green-600 text-white text-sm font-medium rounded-xl px-5 py-3 shadow-lg flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+      {toast.msg && (
+        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 text-white text-sm font-medium rounded-xl px-5 py-3 shadow-lg flex items-center gap-2 transition-all ${toast.type === 'confirmed' ? 'bg-green-600' : 'bg-red-500'}`}>
+          <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d={toast.type === 'confirmed' ? 'M5 13l4 4L19 7' : 'M6 18L18 6M6 6l12 12'} />
           </svg>
-          {toast}
+          {toast.msg}
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      {/* Stat tabs — clicking filters the table */}
+      <div className="flex gap-3 mb-6 flex-wrap">
         {FILTERS.map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`rounded-xl border p-4 text-center transition-all ${
+            className={`flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-sm font-medium border transition-all ${
               filter === f
-                ? 'border-blue-500 bg-blue-50 shadow-sm'
-                : 'border-gray-100 bg-white hover:bg-gray-50'
+                ? 'border-blue-500 bg-blue-600 text-white shadow-sm'
+                : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
             }`}
           >
-            <p className={`text-2xl font-bold ${
-              f === 'pending' ? 'text-yellow-500'
-              : f === 'confirmed' ? 'text-green-500'
-              : f === 'cancelled' ? 'text-gray-400'
-              : 'text-blue-600'
-            }`}>
+            <span className={`text-lg font-bold leading-none ${filter === f ? 'text-white' : f === 'pending' ? 'text-yellow-500' : f === 'confirmed' ? 'text-green-500' : f === 'cancelled' ? 'text-gray-400' : 'text-blue-600'}`}>
               {counts[f]}
-            </p>
-            <p className="text-xs text-gray-500 mt-1 capitalize">{f}</p>
+            </span>
+            <span className="capitalize">{f}</span>
           </button>
         ))}
       </div>
 
       {/* Table */}
-      {filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-dashed border-gray-200 px-8 py-14 text-center">
-          <p className="text-gray-400 text-sm">No appointments found.</p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filtered.map((appt) => (
-            <div
-              key={appt.id}
-              className="bg-white rounded-xl border border-gray-100 shadow-sm p-5"
-            >
-              <div className="flex items-start justify-between gap-4 flex-wrap">
-                {/* Left: patient + appointment info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[appt.status]}`}>
-                      {appt.status}
-                    </span>
-                    <span className="text-xs text-gray-400">{new Date(appt.createdAt).toLocaleDateString()}</span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1 text-sm">
-                    <div>
-                      <span className="text-gray-400 text-xs uppercase tracking-wide">Patient</span>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="divide-y divide-gray-50">
+            {[1,2,3,4].map((i) => (
+              <div key={i} className="h-16 animate-pulse bg-gray-50 m-4 rounded-lg" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-20 text-center">
+            <div className="text-4xl mb-3">📋</div>
+            <p className="text-gray-500 font-medium">No {filter === 'all' ? '' : filter} appointments</p>
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Patient</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Doctor</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden md:table-cell">Date</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide hidden lg:table-cell">Notes</th>
+                <th className="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+                <th className="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {filtered.map((appt) => {
+                const style = STATUS_STYLES[appt.status]
+                return (
+                  <tr key={appt.id} className="hover:bg-gray-50/50 transition-colors">
+                    {/* Patient */}
+                    <td className="px-5 py-4">
                       <p className="font-semibold text-gray-900">{appt.patientName}</p>
-                      <p className="text-gray-500 text-xs">{appt.patientEmail}</p>
-                    </div>
-                    <div>
-                      <span className="text-gray-400 text-xs uppercase tracking-wide">Doctor</span>
-                      <p className="font-semibold text-gray-900">{appt.doctorName}</p>
-                      <p className="text-gray-500 text-xs capitalize">{appt.specialty}</p>
-                    </div>
-                    <div className="mt-1">
-                      <span className="text-gray-400 text-xs uppercase tracking-wide">Date</span>
-                      <p className="font-medium text-gray-900">{appt.preferredDate}</p>
-                    </div>
-                    {appt.notes && (
-                      <div className="mt-1">
-                        <span className="text-gray-400 text-xs uppercase tracking-wide">Notes</span>
-                        <p className="text-gray-600 text-xs">{appt.notes}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                      <p className="text-xs text-gray-400 mt-0.5">{appt.patientEmail}</p>
+                    </td>
 
-                {/* Right: action buttons */}
-                {appt.status === 'pending' && (
-                  <div className="flex flex-col gap-2 shrink-0">
-                    <button
-                      onClick={() => updateStatus(appt.id, 'confirmed')}
-                      disabled={updating === appt.id}
-                      className="rounded-lg bg-green-600 px-4 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
-                    >
-                      {updating === appt.id ? '...' : '✓ Confirm'}
-                    </button>
-                    <button
-                      onClick={() => updateStatus(appt.id, 'cancelled')}
-                      disabled={updating === appt.id}
-                      className="rounded-lg border border-red-200 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
-                    >
-                      {updating === appt.id ? '...' : '✕ Cancel'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                    {/* Doctor */}
+                    <td className="px-5 py-4">
+                      <p className="font-medium text-gray-800">{appt.doctorName}</p>
+                      <p className="text-xs text-gray-400 capitalize mt-0.5">{appt.specialty}</p>
+                    </td>
+
+                    {/* Date */}
+                    <td className="px-5 py-4 hidden md:table-cell">
+                      <p className="font-medium text-gray-800">{appt.preferredDate}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">{new Date(appt.createdAt).toLocaleDateString()}</p>
+                    </td>
+
+                    {/* Notes */}
+                    <td className="px-5 py-4 hidden lg:table-cell max-w-[200px]">
+                      <p className="text-gray-500 text-xs truncate">{appt.notes || '—'}</p>
+                    </td>
+
+                    {/* Status badge */}
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${style.pill}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
+                        {appt.status}
+                      </span>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-5 py-4 text-right">
+                      {appt.status === 'pending' ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => updateStatus(appt.id, 'confirmed')}
+                            disabled={updating === appt.id}
+                            className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50 transition-colors"
+                          >
+                            {updating === appt.id ? '...' : '✓ Confirm'}
+                          </button>
+                          <button
+                            onClick={() => updateStatus(appt.id, 'cancelled')}
+                            disabled={updating === appt.id}
+                            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                          >
+                            {updating === appt.id ? '...' : '✕'}
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-300">—</span>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <p className="text-xs text-gray-400 mt-3 text-right">
+        {filtered.length} appointment{filtered.length !== 1 ? 's' : ''} shown
+      </p>
     </div>
   )
 }
-
-export default AdminDashboard
