@@ -3,7 +3,7 @@
 **Prepared by:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
 **Last updated:** April 11, 2026
-**Current phase:** Phase 2 complete — live on Vercel with MongoDB, JWT auth, patient portal
+**Current phase:** Phase 2 complete — live on Vercel with MongoDB, JWT auth, patient portal, admin panel
 
 ---
 
@@ -28,8 +28,12 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Resend email | ✅ Configured | Bilingual booking confirmation, fire-and-forget |
 | Zod validation | ✅ Done | All API request bodies validated |
 | Route protection | ✅ Done | middleware.ts guards /portal with JWT check |
-| Toast notifications | ✅ Done | Sign-in success toast |
+| Toast notifications | ✅ Done | Sign-in success + admin confirm/cancel toasts |
 | Doctor pre-fill | ✅ Done | Booking form auto-fills name & specialty from doctor card |
+| Admin panel | ✅ Done | /admin/login + dashboard, ADMIN_PASSWORD env var |
+| Admin notifications | ✅ Done | Resend email + Formspree → Gmail on every booking |
+| Patient status email | ✅ Done | Resend email when admin confirms or cancels |
+| Admin JWT guard | ✅ Done | Separate admin_session cookie, middleware protected |
 | Rate limiting | ⏳ Phase 3 | Add to /api/auth/login |
 | Contentful CMS | ⏳ Phase 3 | — |
 | WebRTC video | ⏳ Phase 3 | — |
@@ -144,6 +148,9 @@ telemedicine-booking/
 │   │   └── not-found.tsx
 │   └── {booking,doctors,portal,contact}/page.tsx  # redirect → /en/* fallbacks
 ├── components/
+│   ├── admin/AdminDashboard.tsx      # 'use client' — table + filter tabs + confirm/cancel
+│   ├── admin/AdminLoginForm.tsx      # 'use client' — admin password form
+│   ├── admin/AdminLogoutButton.tsx   # 'use client' — clears admin_session cookie
 │   ├── auth/LoginForm.tsx            # 'use client' — login + toast on success
 │   ├── auth/RegisterForm.tsx         # 'use client' — register form
 │   ├── auth/UserContext.tsx          # 'use client' — global user state, useUser()
@@ -154,11 +161,12 @@ telemedicine-booking/
 │   ├── portal/AppointmentDashboard.tsx # 'use client' — live stats + appointment cards
 │   └── ui/Toast.tsx                  # 'use client' — slide-up notification
 ├── lib/
+│   ├── adminAuth.ts                  # verifyAdminRequest() — checks admin_session JWT
 │   ├── doctors.ts                    # Doctor type + MOCK_DOCTORS (5 entries)
 │   ├── db.ts                         # MongoDB lazy-init connection
 │   ├── auth.ts                       # JWT sign/verify/session + sessionCookieOptions
 │   ├── schemas.ts                    # Zod: RegisterSchema, LoginSchema, AppointmentSchema
-│   └── email.ts                      # Resend bilingual booking confirmation
+│   └── email.ts                      # Resend: booking confirm + admin notify + status update
 ├── locales/
 │   ├── en.json                       # English translations
 │   └── vi.json                       # Vietnamese translations (must stay in sync with en.json)
@@ -229,7 +237,7 @@ Next.js page files may only export:
 |---------|------------|-------------------|------------------|
 | Phase 0 | Apr 10     | ✅ Done            | Foundation, build passing |
 | Phase 1 | Apr 10     | ✅ Done            | i18n, static pages, Formspree, Vercel deploy |
-| Phase 2 | Apr 11     | ✅ Done            | MongoDB, JWT auth, patient portal, Resend, toast |
+| Phase 2 | Apr 11     | ✅ Done            | MongoDB, JWT auth, patient portal, admin panel, triple notifications |
 | Phase 3 | Month 2+   | ⏳ Next            | Rate limiting, WebRTC, Contentful, analytics, SEO |
 
 ---
