@@ -57,7 +57,7 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
         </div>
 
         <Link
-          href={`/booking?doctorId=${doctor.id}`}
+          href={`/booking?doctorId=${doctor.id}&doctorName=${encodeURIComponent(doctor.name)}&specialty=${encodeURIComponent(doctor.specialty)}`}
           className="ml-auto bg-blue-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-blue-700 transition"
         >
           {t('book_button')}

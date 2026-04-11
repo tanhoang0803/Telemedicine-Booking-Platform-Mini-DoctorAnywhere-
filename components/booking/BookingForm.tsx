@@ -110,11 +110,16 @@ export default function BookingForm({ doctorId, doctorName, specialty }: Booking
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {!doctorName && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('doctor_name')} <span className="text-red-500">*</span>
-          </label>
+      {/* Doctor name — read-only if pre-filled from doctor card, editable otherwise */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('doctor_name')} <span className="text-red-500">*</span>
+        </label>
+        {doctorName ? (
+          <div className="w-full border border-blue-200 bg-blue-50 rounded-lg px-3 py-2 text-sm text-blue-800 font-medium">
+            {doctorName}
+          </div>
+        ) : (
           <input
             type="text"
             required
@@ -123,14 +128,19 @@ export default function BookingForm({ doctorId, doctorName, specialty }: Booking
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder={t('doctor_name_placeholder')}
           />
-        </div>
-      )}
+        )}
+      </div>
 
-      {!specialty && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('specialty')}
-          </label>
+      {/* Specialty — read-only if pre-filled, dropdown otherwise */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          {t('specialty')}
+        </label>
+        {specialty ? (
+          <div className="w-full border border-blue-200 bg-blue-50 rounded-lg px-3 py-2 text-sm text-blue-800 font-medium">
+            {specialty}
+          </div>
+        ) : (
           <select
             value={selectedSpecialty}
             onChange={(e) => setSelectedSpecialty(e.target.value)}
@@ -142,8 +152,8 @@ export default function BookingForm({ doctorId, doctorName, specialty }: Booking
             <option value="cardiology">{t('specialty_cardiology')}</option>
             <option value="dermatology">{t('specialty_dermatology')}</option>
           </select>
-        </div>
-      )}
+        )}
+      </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
