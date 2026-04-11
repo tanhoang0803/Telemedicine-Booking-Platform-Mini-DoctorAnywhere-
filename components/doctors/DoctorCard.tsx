@@ -26,7 +26,7 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
         </div>
         <div>
           <h2 className="font-semibold text-gray-900">{doctor.name}</h2>
-          <p className="text-sm text-blue-600">{doctor.specialty}</p>
+          <p className="text-sm text-blue-600">{t(`specialty_${doctor.specialtyKey}`)}</p>
           <div className="flex items-center gap-1 mt-0.5">
             <span className="text-yellow-400 text-xs">★</span>
             <span className="text-xs text-gray-500">{doctor.rating.toFixed(1)}</span>
@@ -34,12 +34,12 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 line-clamp-2">{doctor.bio}</p>
+      <p className="text-sm text-gray-600 line-clamp-2">{t(`bio_${doctor.id}`)}</p>
 
       <div className="flex flex-wrap gap-1">
         {doctor.availableDays.map((day) => (
           <span key={day} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
-            {day}
+            {t(`day_${day}`)}
           </span>
         ))}
       </div>
@@ -57,7 +57,7 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
         </div>
 
         <Link
-          href={`/booking?doctorId=${doctor.id}&doctorName=${encodeURIComponent(doctor.name)}&specialty=${encodeURIComponent(doctor.specialty)}`}
+          href={`/booking?doctorId=${doctor.id}&doctorName=${encodeURIComponent(doctor.name)}&specialty=${doctor.specialtyKey}`}
           className="ml-auto bg-blue-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-blue-700 transition"
         >
           {t('book_button')}

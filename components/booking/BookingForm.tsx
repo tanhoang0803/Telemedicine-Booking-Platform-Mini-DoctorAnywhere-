@@ -138,7 +138,13 @@ export default function BookingForm({ doctorId, doctorName, specialty }: Booking
         </label>
         {specialty ? (
           <div className="w-full border border-blue-200 bg-blue-50 rounded-lg px-3 py-2 text-sm text-blue-800 font-medium">
-            {specialty}
+            {({
+              general: t('specialty_general'),
+              pediatrics: t('specialty_pediatrics'),
+              cardiology: t('specialty_cardiology'),
+              dermatology: t('specialty_dermatology'),
+              internal_medicine: t('specialty_internal_medicine'),
+            } as Record<string, string>)[specialty] ?? specialty}
           </div>
         ) : (
           <select
@@ -151,6 +157,7 @@ export default function BookingForm({ doctorId, doctorName, specialty }: Booking
             <option value="pediatrics">{t('specialty_pediatrics')}</option>
             <option value="cardiology">{t('specialty_cardiology')}</option>
             <option value="dermatology">{t('specialty_dermatology')}</option>
+            <option value="internal_medicine">{t('specialty_internal_medicine')}</option>
           </select>
         )}
       </div>
