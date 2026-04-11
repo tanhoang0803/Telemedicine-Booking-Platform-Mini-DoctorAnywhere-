@@ -1,9 +1,7 @@
 import { setRequestLocale } from 'next-intl/server'
 import AdminLoginForm from '@/components/admin/AdminLoginForm'
 
-export async function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'vi' }]
-}
+export const dynamic = 'force-dynamic'
 
 export default async function AdminLoginPage({
   params,

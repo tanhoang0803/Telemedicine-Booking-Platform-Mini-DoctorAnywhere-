@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useRouter } from '@/i18n/navigation'
 
 interface Appointment {
   id: string
@@ -23,22 +22,6 @@ const STATUS_STYLES = {
 
 const FILTERS = ['all', 'pending', 'confirmed', 'cancelled'] as const
 type Filter = typeof FILTERS[number]
-
-function LogoutButton() {
-  const router = useRouter()
-  async function handleLogout() {
-    await fetch('/api/admin/logout', { method: 'POST' })
-    router.push('/admin/login')
-  }
-  return (
-    <button
-      onClick={handleLogout}
-      className="text-sm text-gray-500 hover:text-red-600 transition-colors"
-    >
-      Sign Out
-    </button>
-  )
-}
 
 function AdminDashboard() {
   const [appointments, setAppointments] = useState<Appointment[]>([])
@@ -214,7 +197,5 @@ function AdminDashboard() {
     </div>
   )
 }
-
-AdminDashboard.LogoutButton = LogoutButton
 
 export default AdminDashboard

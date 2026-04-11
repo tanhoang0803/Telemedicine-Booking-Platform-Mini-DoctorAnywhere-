@@ -3,10 +3,9 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { jwtVerify } from 'jose'
 import AdminDashboard from '@/components/admin/AdminDashboard'
+import AdminLogoutButton from '@/components/admin/AdminLogoutButton'
 
-export async function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'vi' }]
-}
+export const dynamic = 'force-dynamic'
 
 async function verifyAdminSession(): Promise<boolean> {
   try {
@@ -42,7 +41,7 @@ export default async function AdminPage({
             <h1 className="text-lg font-bold text-gray-900">Admin Dashboard</h1>
             <p className="text-xs text-gray-500">Mini-DoctorAnywhere · Appointment Management</p>
           </div>
-          <AdminDashboard.LogoutButton />
+          <AdminLogoutButton />
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-4 py-8">
