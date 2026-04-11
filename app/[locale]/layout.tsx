@@ -2,8 +2,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
+import LayoutShell from '@/components/layout/LayoutShell'
 import { UserProvider } from '@/components/auth/UserContext'
 
 export function generateStaticParams() {
@@ -32,9 +31,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider messages={messages}>
       <UserProvider>
-        <Header />
-        <div className="flex-1">{children}</div>
-        <Footer />
+        <LayoutShell>{children}</LayoutShell>
       </UserProvider>
     </NextIntlClientProvider>
   )
