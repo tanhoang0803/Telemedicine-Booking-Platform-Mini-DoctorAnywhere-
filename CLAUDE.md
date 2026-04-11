@@ -3,7 +3,7 @@
 **Prepared by:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
 **Last updated:** April 11, 2026
-**Current phase:** Phase 2 complete — live on Vercel with MongoDB, JWT auth, patient portal, admin panel
+**Current phase:** Phase 3 in progress — rate limiting live; SEO (sitemap, robots, OpenGraph) shipped
 
 ---
 
@@ -34,7 +34,10 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Admin notifications | ✅ Done | Resend email + Formspree → Gmail on every booking |
 | Patient status email | ✅ Done | Resend email when admin confirms or cancels |
 | Admin JWT guard | ✅ Done | Separate admin_session cookie, middleware protected |
-| Rate limiting | ⏳ Phase 3 | Add to /api/auth/login |
+| Rate limiting | ✅ Done | LRU sliding-window — login (5/min), register (3/10min) |
+| SEO metadata | ✅ Done | `generateMetadata` + OpenGraph on all public pages |
+| Sitemap | ✅ Done | `app/sitemap.ts` — all locale+route combos |
+| Robots | ✅ Done | `app/robots.ts` — blocks /admin/ and /api/ from crawlers |
 | Contentful CMS | ⏳ Phase 3 | — |
 | WebRTC video | ⏳ Phase 3 | — |
 
@@ -51,6 +54,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Auth       | JWT via `jose`, bcrypt (Phase 2)                         |
 | Database   | MongoDB Atlas Free Tier (Phase 2)                        |
 | Email      | Resend (Phase 2)                                         |
+| Rate limit | `lru-cache` sliding-window (Phase 3)                     |
 | CMS        | Contentful (Phase 3)                                     |
 | Video      | WebRTC (Phase 3)                                         |
 | Hosting    | Vercel Free Tier                                         |

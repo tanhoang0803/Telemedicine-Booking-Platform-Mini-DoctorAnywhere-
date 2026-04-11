@@ -3,8 +3,18 @@ import bcrypt from 'bcryptjs'
 import { getDb } from '@/lib/db'
 import { createSessionToken, sessionCookieOptions } from '@/lib/auth'
 import { RegisterSchema } from '@/lib/schemas'
+import { rateLimit } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
+  // 3 registrations per 10 minutes per IP
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '127.0.0.1'
+  if (!rateLimit(ip, 3, 10 * 60_000).success) {
+    return NextResponse.json(
+      { error: 'Too many registration attempts. Please wait 10 minutes and try again.' },
+      { status: 429 }
+    )
+  }
+
   try {
     const body = await request.json()
     const parsed = RegisterSchema.safeParse(body)

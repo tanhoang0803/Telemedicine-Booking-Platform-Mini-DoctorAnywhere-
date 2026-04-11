@@ -1,5 +1,28 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
+import type { Metadata } from 'next'
 import { Link } from '@/i18n/navigation'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'home' })
+  const isVi = locale === 'vi'
+  return {
+    title: 'Mini-DoctorAnywhere — ' + (isVi ? 'Đặt lịch khám trực tuyến' : 'Online Telemedicine Booking'),
+    description: t('subtitle'),
+    openGraph: {
+      title: 'Mini-DoctorAnywhere',
+      description: t('subtitle'),
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}`,
+      siteName: 'Mini-DoctorAnywhere',
+      locale: locale === 'vi' ? 'vi_VN' : 'en_US',
+      type: 'website',
+    },
+  }
+}
 
 export default async function HomePage({
   params,

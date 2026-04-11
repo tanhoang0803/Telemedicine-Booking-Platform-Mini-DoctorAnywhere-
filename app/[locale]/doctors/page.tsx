@@ -1,6 +1,25 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
+import type { Metadata } from 'next'
 import DoctorCard from '@/components/doctors/DoctorCard'
 import { MOCK_DOCTORS } from '@/lib/doctors'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'doctors' })
+  return {
+    title: t('title') + ' — Mini-DoctorAnywhere',
+    description: t('subtitle'),
+    openGraph: {
+      title: t('title') + ' — Mini-DoctorAnywhere',
+      description: t('subtitle'),
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/doctors`,
+    },
+  }
+}
 
 export default async function DoctorsPage({
   params,

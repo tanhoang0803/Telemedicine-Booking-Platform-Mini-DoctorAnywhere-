@@ -4,7 +4,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 
 **Author:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
-**Last updated:** April 11, 2026
+**Last updated:** April 11, 2026 (Phase 3 — rate limiting + SEO)
 **Live:** https://telemedicine-booking-platform-mini.vercel.app/en
 
 ---
@@ -20,6 +20,8 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 - **Triple notification** — Patient confirmation email + admin Resend email + Formspree → Gmail
 - **Patient status email** — Patient notified when admin confirms or cancels
 - **Route protection** — `/portal` and `/admin` guarded by middleware JWT check
+- **Rate limiting** — Sliding-window per-IP limits on login (5/min) and register (3/10min)
+- **SEO** — Per-page `generateMetadata`, OpenGraph tags, XML sitemap, robots.txt
 - **Toast notifications** — Success/error feedback on key actions
 - **Responsive layout** — Mobile-first, collapsible nav
 
@@ -37,6 +39,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Email      | Resend                            | ✅ Live       |
 | Backup notify | Formspree → Gmail              | ✅ Live       |
 | Validation | Zod                               | ✅ Active     |
+| Rate limit | lru-cache (sliding window)        | ✅ Active     |
 | Hosting    | Vercel (Free Tier)                | ✅ Deployed   |
 | CMS        | Contentful                        | ⏳ Phase 3    |
 | Video      | WebRTC                            | ⏳ Phase 3    |
@@ -174,8 +177,11 @@ Admin confirms or cancels
 │   ├── db.ts                         # MongoDB lazy-init connection
 │   ├── doctors.ts                    # Mock doctor data
 │   ├── email.ts                      # Resend: booking confirm + admin notify + status update
+│   ├── rateLimit.ts                  # LRU sliding-window rate limiter
 │   └── schemas.ts                    # Zod validation schemas
 ├── locales/en.json + vi.json
+├── app/sitemap.ts                    # XML sitemap (all locale + route combos)
+├── app/robots.ts                     # Crawler rules — blocks /admin/ and /api/
 └── middleware.ts                     # Locale + /portal + /admin JWT guards
 ```
 
@@ -196,12 +202,14 @@ Admin confirms or cancels
 - [x] Formspree Gmail backup notification
 - [x] Middleware JWT guards on /portal and /admin
 
-### Phase 3 — Advanced Features ⏳
-- [ ] Rate limiting on `/api/auth/login`
+### Phase 3 — Advanced Features ⏳ (in progress)
+- [x] Rate limiting — `/api/auth/login` (5/min) + `/api/auth/register` (3/10min)
+- [x] SEO — `generateMetadata()` + OpenGraph on all public pages
+- [x] Sitemap — `app/sitemap.ts` covering all locale + route combos
+- [x] Robots — `app/robots.ts` blocking `/admin/` and `/api/` from crawlers
 - [ ] Contentful CMS for doctor profiles
 - [ ] WebRTC video consultation
 - [ ] Vercel Analytics
-- [ ] SEO — sitemap, robots.txt, `generateMetadata()`
 - [ ] Lighthouse score ≥ 90
 
 ---
@@ -231,6 +239,7 @@ Pushes to `main` auto-deploy to Vercel.
 - bcrypt passwords (12 rounds) — `passwordHash` never returned in responses
 - Constant-time password comparison (timing-attack safe)
 - Zod validation on all API request bodies
+- Rate limiting on auth endpoints (login 5/min, register 3/10min per IP)
 - All secrets in env vars — never hardcoded
 - HTTPS via Vercel
 

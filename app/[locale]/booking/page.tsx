@@ -1,5 +1,24 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
+import type { Metadata } from 'next'
 import BookingForm from '@/components/booking/BookingForm'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'booking' })
+  return {
+    title: t('title') + ' — Mini-DoctorAnywhere',
+    description: t('subtitle'),
+    openGraph: {
+      title: t('title') + ' — Mini-DoctorAnywhere',
+      description: t('subtitle'),
+      url: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/booking`,
+    },
+  }
+}
 
 export default async function BookingPage({
   params,

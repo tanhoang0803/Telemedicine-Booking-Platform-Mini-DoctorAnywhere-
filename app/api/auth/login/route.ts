@@ -3,8 +3,18 @@ import bcrypt from 'bcryptjs'
 import { getDb } from '@/lib/db'
 import { createSessionToken, sessionCookieOptions } from '@/lib/auth'
 import { LoginSchema } from '@/lib/schemas'
+import { rateLimit } from '@/lib/rateLimit'
 
 export async function POST(request: NextRequest) {
+  // 5 attempts per minute per IP
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '127.0.0.1'
+  if (!rateLimit(ip, 5, 60_000).success) {
+    return NextResponse.json(
+      { error: 'Too many login attempts. Please wait 1 minute and try again.' },
+      { status: 429 }
+    )
+  }
+
   try {
     const body = await request.json()
     const parsed = LoginSchema.safeParse(body)
