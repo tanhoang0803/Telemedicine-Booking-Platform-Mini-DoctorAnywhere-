@@ -5,9 +5,7 @@ import { getSession } from '@/lib/auth'
 import AppointmentDashboard from '@/components/portal/AppointmentDashboard'
 import { Link } from '@/i18n/navigation'
 
-export async function generateStaticParams() {
-  return [{ locale: 'en' }, { locale: 'vi' }]
-}
+export const dynamic = 'force-dynamic'
 
 export default async function PortalPage({
   params,
