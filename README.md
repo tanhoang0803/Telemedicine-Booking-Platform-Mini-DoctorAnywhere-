@@ -4,34 +4,40 @@ A free, bilingual (Vietnamese/English) telemedicine platform that enables patien
 
 **Author:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
-**Current phase:** Phase 1 complete — app running locally, ready for Vercel deployment
+**Last updated:** April 11, 2026
+**Live:** https://telemedicine-booking-platform-mini.vercel.app/en
 
 ---
 
-## Live Features (Phase 1)
+## Live Features (Phase 2 ✅)
 
-- **Bilingual UI** — Full Vietnamese / English with live EN | VI switcher in the header
-- **Doctor Directory** — 5 mock doctor profiles with specialties, availability, ratings, and language badges
-- **Appointment Booking** — Formspree form; pre-fills doctor when coming from the directory
-- **Locale Routing** — All pages at `/en/...` and `/vi/...`; middleware auto-detects and redirects
+- **Bilingual UI** — Full Vietnamese / English with live EN | VI switcher
+- **Doctor Directory** — 5 doctor profiles with specialties, ratings, and availability
+- **JWT Authentication** — Register, login, logout with HttpOnly session cookies
+- **Patient Portal** — Dashboard with appointment stats, list, and cancellation
+- **Appointment Booking** — Authenticated API with Resend email confirmation
+- **Doctor pre-fill** — Clicking "Book" on a doctor card auto-fills name & specialty
+- **Route Protection** — `/portal` redirects to `/login` if not authenticated
+- **Toast notifications** — Success toast on sign-in
+- **Locale Routing** — All pages at `/en/...` and `/vi/...`
 - **Responsive Layout** — Mobile-first with collapsible navigation
 
 ---
 
 ## Tech Stack
 
-| Layer      | Technology                                          | Status       |
-|------------|-----------------------------------------------------|--------------|
-| Framework  | Next.js 14.2 (App Router)                           | ✅ Active     |
-| Styling    | Tailwind CSS 3.4                                    | ✅ Active     |
-| i18n       | next-intl 4.9 (locale routing, SSG)                 | ✅ Active     |
-| Forms      | Formspree (`xwvwdqvp`)                              | ✅ Configured |
-| Auth       | JWT (jose) + bcrypt                                 | ⏳ Phase 2    |
-| Database   | MongoDB Atlas (Free Tier)                           | ⏳ Phase 2    |
-| Email      | Resend                                              | ⏳ Phase 2    |
-| CMS        | Contentful                                          | ⏳ Phase 3    |
-| Video      | WebRTC                                              | ⏳ Phase 3    |
-| Hosting    | Vercel (Free Tier)                                  | ⏳ Deploy next |
+| Layer      | Technology                                          | Status        |
+|------------|-----------------------------------------------------|---------------|
+| Framework  | Next.js 14.2 (App Router)                           | ✅ Active      |
+| Styling    | Tailwind CSS 3.4                                    | ✅ Active      |
+| i18n       | next-intl 4.9 (locale routing, SSG)                 | ✅ Active      |
+| Auth       | JWT (jose) + bcryptjs                               | ✅ Live        |
+| Database   | MongoDB Atlas (Free Tier)                           | ✅ Connected   |
+| Email      | Resend                                              | ✅ Configured  |
+| Validation | Zod                                                 | ✅ Active      |
+| Hosting    | Vercel (Free Tier)                                  | ✅ Deployed    |
+| CMS        | Contentful                                          | ⏳ Phase 3     |
+| Video      | WebRTC                                              | ⏳ Phase 3     |
 
 ---
 
@@ -56,14 +62,15 @@ npm install
 cp .env.example .env.local
 ```
 
-Minimum required for Phase 1:
+Fill in `.env.local`:
 
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_FORMSPREE_ID=xwvwdqvp
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/telemedicine?appName=Cluster0
+JWT_SECRET=<openssl rand -hex 32>
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxx
 ```
-
-Full variable reference: see `.env.example`.
 
 ### Run Development Server
 
@@ -75,152 +82,133 @@ Open [http://localhost:3000](http://localhost:3000) — redirects automatically 
 
 | URL | Description |
 |-----|-------------|
-| `/en` | Home (English) |
-| `/vi` | Home (Vietnamese) |
+| `/en` | Home |
 | `/en/doctors` | Doctor directory |
-| `/en/booking?doctorId=1` | Booking form pre-filled for doctor 1 |
-| `/en/portal` | Patient portal (Phase 2 placeholder) |
-| `/en/contact` | Contact page |
+| `/en/booking?doctorId=1&doctorName=...&specialty=...` | Pre-filled booking |
+| `/en/login` | Sign in |
+| `/en/register` | Create account |
+| `/en/portal` | Patient dashboard (requires auth) |
+| `/en/contact` | Contact |
+| `/api/health` | DB connectivity check |
+
+---
+
+## API Routes
+
+| Method | Route | Auth | Description |
+|--------|-------|------|-------------|
+| POST | `/api/auth/register` | — | Create patient account |
+| POST | `/api/auth/login` | — | Sign in, set session cookie |
+| POST | `/api/auth/logout` | — | Clear session cookie |
+| GET | `/api/auth/me` | ✅ | Return current session |
+| POST | `/api/appointments` | ✅ | Book appointment + send email |
+| GET | `/api/appointments` | ✅ | List patient's appointments |
+| DELETE | `/api/appointments/[id]` | ✅ | Cancel pending appointment |
+| GET | `/api/health` | — | MongoDB ping |
 
 ---
 
 ## Project Structure
 
 ```
-telemedicine-booking/
-├── CLAUDE.md                         # AI assistant context and guidelines
-├── README.md                         # This file
-├── .claude/
-│   ├── commands/                     # /memory, /review, /deploy slash commands
-│   ├── skills/                       # booking.md, portal.md, cms.md
-│   ├── agents/                       # bookingAgent, notificationAgent, cmsAgent
-│   ├── hooks/                        # preCommit.md, postDeploy.md
-│   └── settings.json                 # Claude Code permissions and hooks
-├── .env.example                      # Environment variable template
-├── .gitignore / .gitattributes
-├── .github/
-│   ├── workflows/deploy.yml          # Vercel CI/CD pipeline
-│   └── CODEOWNERS                    # Restricts all PRs to @TanQHoang
-├── i18n/
-│   ├── routing.ts                    # Locale config (en, vi)
-│   ├── request.ts                    # Loads locales/*.json per request
-│   └── navigation.ts                 # Locale-aware Link, useRouter, usePathname
-├── middleware.ts                     # next-intl locale detection + redirect
 ├── app/
-│   ├── layout.tsx                    # Root layout — owns <html>, <body>, Inter font
-│   ├── globals.css                   # Tailwind directives + base styles
-│   ├── [locale]/                     # All user-facing routes (en | vi)
-│   │   ├── layout.tsx                # NextIntlClientProvider, Header, Footer
+│   ├── layout.tsx                    # Root — owns <html>, <body>
+│   ├── [locale]/
+│   │   ├── layout.tsx                # UserProvider + Header + Footer
 │   │   ├── page.tsx                  # Home
-│   │   ├── booking/page.tsx          # Booking form (reads ?doctorId)
+│   │   ├── login/page.tsx            # Sign in
+│   │   ├── register/page.tsx         # Create account
+│   │   ├── booking/page.tsx          # Booking form
 │   │   ├── doctors/page.tsx          # Doctor directory
-│   │   ├── portal/page.tsx           # Patient portal
-│   │   ├── contact/page.tsx          # Contact
-│   │   ├── loading.tsx               # Spinner
-│   │   └── not-found.tsx             # 404
-│   └── {booking,doctors,portal,contact}/page.tsx  # /en/* redirects
+│   │   ├── portal/page.tsx           # Patient dashboard
+│   │   └── contact/page.tsx
+│   └── api/
+│       ├── auth/{login,register,logout,me}/
+│       ├── appointments/
+│       └── health/
 ├── components/
-│   ├── layout/Header.tsx             # Nav + EN/VI live switcher
-│   ├── layout/Footer.tsx             # Locale-aware links
-│   ├── booking/BookingForm.tsx       # Formspree + useTranslations + doctorId
-│   ├── booking/BookingCalendar.tsx   # Date picker (Phase 2: availability)
-│   └── doctors/DoctorCard.tsx        # Profile card + locale-aware Book link
+│   ├── auth/LoginForm.tsx            # With toast on success
+│   ├── auth/RegisterForm.tsx
+│   ├── auth/UserContext.tsx          # Global user state (React context)
+│   ├── booking/BookingForm.tsx       # API-backed, auth-gated
+│   ├── doctors/DoctorCard.tsx        # Pre-fills booking URL params
+│   ├── layout/Header.tsx             # Auth-aware nav + logout
+│   ├── portal/AppointmentDashboard.tsx
+│   └── ui/Toast.tsx
 ├── lib/
-│   ├── doctors.ts                    # Doctor type + 5 mock doctors
-│   ├── db.ts                         # MongoDB connection (Phase 2)
-│   └── auth.ts                       # JWT utilities (Phase 2)
+│   ├── auth.ts                       # JWT sign/verify/session (lazy)
+│   ├── db.ts                         # MongoDB connection (lazy)
+│   ├── doctors.ts                    # Mock doctor data
+│   ├── email.ts                      # Resend bilingual templates
+│   └── schemas.ts                    # Zod validation schemas
 ├── locales/
-│   ├── en.json                       # English translations (40+ keys)
-│   └── vi.json                       # Vietnamese translations (synced)
-└── public/images/
-    └── doctor-placeholder.svg
+│   ├── en.json
+│   └── vi.json
+└── middleware.ts                     # Locale detection + /portal auth guard
 ```
 
 ---
 
 ## Roadmap
 
-### Phase 0 — Project Foundation ✅
-- [x] `package.json`, `next.config.mjs`, `tsconfig.json`, `tailwind.config.ts`
-- [x] `app/layout.tsx` (root — owns `<html>`, `<body>`), `globals.css`
-- [x] `.gitattributes`, `.gitignore`, `.env.example`
-- [x] `.claude/settings.json`, `.github/workflows/deploy.yml`, `CODEOWNERS`
-- [x] `npm run build` passes — 0 errors
+### Phase 0 — Foundation ✅
+- [x] Next.js 14, Tailwind, TypeScript, ESLint
+- [x] `.env.example`, `.gitattributes`, `CODEOWNERS`
 
 ### Phase 1 — Static MVP ✅
-- [x] `next-intl` v4 — locale routing (`/en/...`, `/vi/...`)
-- [x] `middleware.ts`, `i18n/routing.ts`, `request.ts`, `navigation.ts`
-- [x] `app/[locale]/layout.tsx` — Provider, Header, Footer (no duplicate html/body)
-- [x] All 5 pages with full translations (en + vi)
-- [x] Header — live EN/VI switcher, stays on current path
-- [x] `BookingForm` — Formspree (`xwvwdqvp`) + `doctorId` pre-fill
-- [x] `DoctorCard` — locale-aware Book button
-- [x] 5 mock doctors in `lib/doctors.ts`
-- [x] White-page bug fixed — root layout owns `<html>`/`<body>`
-- [x] Build: 18 static pages (en + vi × 5), 0 errors
-- [x] `NEXT_PUBLIC_FORMSPREE_ID` configured in `.env.local`
-- [ ] **Next** → Test booking form end-to-end (submit → receive email)
-- [ ] **Next** → Deploy to Vercel
+- [x] next-intl v4 locale routing (`/en/...`, `/vi/...`)
+- [x] 5 pages, bilingual, responsive
+- [x] Formspree booking form
+- [x] Live EN/VI switcher
+- [x] Deployed on Vercel
 
-### Phase 2 — Database & Patient Portal ⏳ Month 1–2
-- [ ] MongoDB Atlas cluster + connection test
-- [ ] Patient register / login / logout API routes
-- [ ] JWT session middleware for `/portal/*`
-- [ ] Login + Register pages
-- [ ] Appointments API (`POST`, `GET`, `DELETE`)
-- [ ] Patient portal dashboard, profile, history
-- [ ] BookingForm → `POST /api/appointments` (replace Formspree)
-- [ ] Resend email — bilingual booking confirmation
-- [ ] Zod input validation on all API routes
+### Phase 2 — Auth & Database ✅
+- [x] MongoDB Atlas connected
+- [x] JWT register / login / logout / me
+- [x] Appointments API (create, list, cancel)
+- [x] Patient portal dashboard with stats
+- [x] Resend email confirmation (bilingual)
+- [x] Zod validation on all API routes
+- [x] Middleware auth guard on `/portal`
+- [x] Toast notification on sign-in
+- [x] Doctor pre-fill in booking form
+
+### Phase 3 — Advanced Features ⏳
 - [ ] Rate limiting on `/api/auth/login`
-
-### Phase 3 — Advanced Features ⏳ Month 3–4
-- [ ] Contentful CMS — doctor profiles + blog
-- [ ] ISR on doctor pages (`revalidate: 3600`)
-- [ ] WebRTC video consultation room
+- [ ] Contentful CMS — doctor profiles
+- [ ] ISR on doctor pages
+- [ ] WebRTC video consultation
 - [ ] Vercel Analytics
-- [ ] Sitemap, robots.txt, `generateMetadata()` on all pages
+- [ ] SEO — sitemap, robots.txt, `generateMetadata()`
 - [ ] Lighthouse score ≥ 90
 
 ---
 
 ## Deployment
 
-Pushes to `main` auto-deploy to Vercel via GitHub Actions.
+Pushes to `main` auto-deploy to Vercel.
 
-**Vercel env vars to add:**
+**Required Vercel environment variables:**
 
-| Variable | Phase | Value |
-|----------|-------|-------|
-| `NEXT_PUBLIC_APP_URL` | 1 | `https://your-project.vercel.app` |
-| `NEXT_PUBLIC_FORMSPREE_ID` | 1 | `xwvwdqvp` |
-| `MONGODB_URI` | 2 | MongoDB Atlas connection string |
-| `JWT_SECRET` | 2 | `openssl rand -base64 32` |
-| `RESEND_API_KEY` | 2 | From resend.com |
-
----
-
-## Known Architecture Note
-
-Next.js App Router **requires** `<html>` and `<body>` in the root layout (`app/layout.tsx`).
-The `[locale]` layout must **not** repeat them — it wraps content with `NextIntlClientProvider`, `Header`, and `Footer` only.
+| Variable | Value |
+|----------|-------|
+| `MONGODB_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | 64-char hex string |
+| `RESEND_API_KEY` | From resend.com |
+| `NEXT_PUBLIC_APP_URL` | Your Vercel URL |
+| `NEXT_PUBLIC_FORMSPREE_ID` | `xwvwdqvp` |
 
 ---
 
 ## Security
 
-- JWT in HttpOnly, Secure, SameSite=Strict cookies — never localStorage (Phase 2)
-- bcrypt passwords (min 10 rounds) — `passwordHash` never returned in responses
+- JWT in HttpOnly, Secure, SameSite=Strict cookies — never localStorage
+- bcrypt passwords (12 rounds) — `passwordHash` never returned in responses
+- Constant-time password comparison (timing-attack safe)
+- Zod validation on all API request bodies
 - All secrets in env vars — never hardcoded
 - HTTPS via Vercel
-- Zod validation on all API bodies (Phase 2)
 - `CODEOWNERS` — only `@TanQHoang` can merge
-
----
-
-## Contributing
-
-**Single contributor: TanQHoang.** `CODEOWNERS` enforces this.
 
 ---
 

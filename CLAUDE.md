@@ -2,8 +2,8 @@
 
 **Prepared by:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
-**Last updated:** April 10, 2026
-**Current phase:** Phase 1 complete — running locally, pending Vercel deployment
+**Last updated:** April 11, 2026
+**Current phase:** Phase 2 complete — live on Vercel with MongoDB, JWT auth, patient portal
 
 ---
 
@@ -20,11 +20,17 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Project foundation | ✅ Done | package.json, tsconfig, tailwind, eslint, gitattributes |
 | i18n (next-intl v4) | ✅ Done | `/en/...` + `/vi/...` routes, live EN/VI switcher |
 | Static pages | ✅ Done | Home, Doctors, Booking, Portal, Contact — all bilingual |
-| Formspree | ✅ Configured | `NEXT_PUBLIC_FORMSPREE_ID=xwvwdqvp` set in `.env.local` |
-| White-page bug | ✅ Fixed | Root layout owns `<html>`/`<body>`; locale layout is wrapper only |
-| Vercel deployment | ⏳ Next step | Connect repo, add env vars, push |
-| MongoDB / Auth | ⏳ Phase 2 | `lib/db.ts` and `lib/auth.ts` scaffolded, not wired |
-| Email (Resend) | ⏳ Phase 2 | — |
+| Vercel deployment | ✅ Live | https://telemedicine-booking-platform-mini.vercel.app/en |
+| MongoDB Atlas | ✅ Connected | cluster0.gi0tvbq.mongodb.net / db: telemedicine |
+| JWT Auth | ✅ Done | register, login, logout, /me — HttpOnly session cookies |
+| Patient portal | ✅ Done | Dashboard with stats, appointments list, cancel |
+| Appointments API | ✅ Done | POST, GET, DELETE — auth-gated |
+| Resend email | ✅ Configured | Bilingual booking confirmation, fire-and-forget |
+| Zod validation | ✅ Done | All API request bodies validated |
+| Route protection | ✅ Done | middleware.ts guards /portal with JWT check |
+| Toast notifications | ✅ Done | Sign-in success toast |
+| Doctor pre-fill | ✅ Done | Booking form auto-fills name & specialty from doctor card |
+| Rate limiting | ⏳ Phase 3 | Add to /api/auth/login |
 | Contentful CMS | ⏳ Phase 3 | — |
 | WebRTC video | ⏳ Phase 3 | — |
 
@@ -138,15 +144,21 @@ telemedicine-booking/
 │   │   └── not-found.tsx
 │   └── {booking,doctors,portal,contact}/page.tsx  # redirect → /en/* fallbacks
 ├── components/
-│   ├── layout/Header.tsx             # 'use client' — useTranslations + locale switcher
+│   ├── auth/LoginForm.tsx            # 'use client' — login + toast on success
+│   ├── auth/RegisterForm.tsx         # 'use client' — register form
+│   ├── auth/UserContext.tsx          # 'use client' — global user state, useUser()
+│   ├── layout/Header.tsx             # 'use client' — auth-aware nav + logout
 │   ├── layout/Footer.tsx             # Locale-aware links
-│   ├── booking/BookingForm.tsx       # 'use client' — Formspree + useTranslations + doctorId
-│   ├── booking/BookingCalendar.tsx   # 'use client' — date picker
-│   └── doctors/DoctorCard.tsx        # 'use client' — locale-aware Book link
+│   ├── booking/BookingForm.tsx       # 'use client' — API-backed, auth-gated, pre-fill
+│   ├── doctors/DoctorCard.tsx        # 'use client' — passes doctorName+specialty in URL
+│   ├── portal/AppointmentDashboard.tsx # 'use client' — live stats + appointment cards
+│   └── ui/Toast.tsx                  # 'use client' — slide-up notification
 ├── lib/
 │   ├── doctors.ts                    # Doctor type + MOCK_DOCTORS (5 entries)
-│   ├── db.ts                         # MongoDB cached connection (Phase 2)
-│   └── auth.ts                       # JWT sign/verify/session (Phase 2)
+│   ├── db.ts                         # MongoDB lazy-init connection
+│   ├── auth.ts                       # JWT sign/verify/session + sessionCookieOptions
+│   ├── schemas.ts                    # Zod: RegisterSchema, LoginSchema, AppointmentSchema
+│   └── email.ts                      # Resend bilingual booking confirmation
 ├── locales/
 │   ├── en.json                       # English translations
 │   └── vi.json                       # Vietnamese translations (must stay in sync with en.json)
@@ -216,9 +228,9 @@ Next.js page files may only export:
 | Phase   | Timeline   | Status            | Key Deliverables |
 |---------|------------|-------------------|------------------|
 | Phase 0 | Apr 10     | ✅ Done            | Foundation, build passing |
-| Phase 1 | Weeks 1–2  | ✅ Done            | i18n, static pages, Formspree, bug fixes |
-| Phase 2 | Month 1–2  | ⏳ Next            | MongoDB, JWT auth, patient portal, Resend |
-| Phase 3 | Month 3–4  | ⏳ Future          | WebRTC, Contentful, analytics, SEO |
+| Phase 1 | Apr 10     | ✅ Done            | i18n, static pages, Formspree, Vercel deploy |
+| Phase 2 | Apr 11     | ✅ Done            | MongoDB, JWT auth, patient portal, Resend, toast |
+| Phase 3 | Month 2+   | ⏳ Next            | Rate limiting, WebRTC, Contentful, analytics, SEO |
 
 ---
 
