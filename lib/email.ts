@@ -84,7 +84,7 @@ export async function sendAdminNotification(params: AdminNotificationParams) {
             <td style="padding:8px 12px;border:1px solid #e5e7eb;font-size:12px;color:#6b7280">${appointmentId}</td></tr>
       </table>
       <p style="margin-top:20px">
-        <a href="${process.env.NEXT_PUBLIC_APP_URL}/en/admin"
+        <a href="${process.env.ADMIN_URL ?? process.env.NEXT_PUBLIC_APP_URL + '/en/admin'}"
            style="background:#1d4ed8;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">
           Open Admin Panel →
         </a>
