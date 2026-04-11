@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb'
 import { getDb } from '@/lib/db'
 import { verifySessionToken } from '@/lib/auth'
 import { AppointmentSchema } from '@/lib/schemas'
-import { sendBookingConfirmation } from '@/lib/email'
+import { sendBookingConfirmation, sendAdminNotification } from '@/lib/email'
 
 async function getPatientFromRequest(request: NextRequest) {
   const token = request.cookies.get('session')?.value
@@ -13,6 +13,17 @@ async function getPatientFromRequest(request: NextRequest) {
   } catch {
     return null
   }
+}
+
+// Fire-and-forget Formspree ping — admin Gmail notification backup
+async function pingFormspree(data: Record<string, string>) {
+  const id = process.env.NEXT_PUBLIC_FORMSPREE_ID
+  if (!id) return
+  fetch(`https://formspree.io/f/${id}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(data),
+  }).catch((err) => console.error('[Formspree]', err))
 }
 
 export async function POST(request: NextRequest) {
@@ -34,7 +45,6 @@ export async function POST(request: NextRequest) {
     const { doctorId, doctorName, specialty, preferredDate, notes } = parsed.data
     const db = await getDb()
 
-    // Fetch patient language preference
     const patientDoc = await db
       .collection('patients')
       .findOne({ _id: new ObjectId(patient.sub) })
@@ -54,7 +64,9 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date(),
     })
 
-    // Fire-and-forget confirmation email
+    const appointmentId = result.insertedId.toString()
+
+    // 1. Patient confirmation email (Resend)
     sendBookingConfirmation({
       to: patient.email,
       patientName: patient.name,
@@ -64,10 +76,30 @@ export async function POST(request: NextRequest) {
       language,
     })
 
-    return NextResponse.json(
-      { data: { id: result.insertedId.toString() } },
-      { status: 201 }
-    )
+    // 2. Admin notification email (Resend)
+    sendAdminNotification({
+      appointmentId,
+      patientName: patient.name,
+      patientEmail: patient.email,
+      doctorName,
+      specialty,
+      preferredDate,
+      notes: notes ?? '',
+    })
+
+    // 3. Formspree ping → admin Gmail backup
+    pingFormspree({
+      _subject: `New booking — ${patient.name} with ${doctorName}`,
+      patient: patient.name,
+      email: patient.email,
+      doctor: doctorName,
+      specialty,
+      date: preferredDate,
+      notes: notes ?? '',
+      appointmentId,
+    })
+
+    return NextResponse.json({ data: { id: appointmentId } }, { status: 201 })
   } catch (err) {
     console.error('[appointments POST]', err)
     return NextResponse.json({ error: 'Server error. Please try again.' }, { status: 500 })

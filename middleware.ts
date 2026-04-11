@@ -6,6 +6,7 @@ import { verifySessionToken } from './lib/auth'
 const intlMiddleware = createMiddleware(routing)
 
 const PROTECTED_PATHS = ['/portal']
+const ADMIN_PATHS = ['/admin']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -17,6 +18,9 @@ export async function middleware(request: NextRequest) {
     )
   )
 
+  const locale = routing.locales.find((l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`)
+    ?? routing.defaultLocale
+
   if (isProtected) {
     const token = request.cookies.get('session')?.value
     let valid = false
@@ -24,18 +28,36 @@ export async function middleware(request: NextRequest) {
       try {
         await verifySessionToken(token)
         valid = true
-      } catch {
-        valid = false
-      }
+      } catch { valid = false }
     }
-
     if (!valid) {
-      // Detect locale from pathname for redirect
-      const locale = routing.locales.find((l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`)
-        ?? routing.defaultLocale
       const loginUrl = new URL(`/${locale}/login`, request.url)
       loginUrl.searchParams.set('from', pathname)
       return NextResponse.redirect(loginUrl)
+    }
+  }
+
+  // Admin route protection — skip /admin/login itself
+  const isAdminRoute = routing.locales.some((l) =>
+    ADMIN_PATHS.some(
+      (p) => pathname === `/${l}${p}` || pathname.startsWith(`/${l}${p}/`)
+    )
+  )
+  const isAdminLogin = routing.locales.some((l) => pathname === `/${l}/admin/login`)
+
+  if (isAdminRoute && !isAdminLogin) {
+    const token = request.cookies.get('admin_session')?.value
+    let isAdmin = false
+    if (token) {
+      try {
+        const { jwtVerify } = await import('jose')
+        const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
+        const { payload } = await jwtVerify(token, secret, { algorithms: ['HS256'] })
+        isAdmin = payload.role === 'admin'
+      } catch { isAdmin = false }
+    }
+    if (!isAdmin) {
+      return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
     }
   }
 
