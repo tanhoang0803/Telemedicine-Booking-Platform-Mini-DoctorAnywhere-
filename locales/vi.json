@@ -127,6 +127,13 @@
     "response_label": "Thời gian phản hồi",
     "response_time": "Trong vòng 24 giờ"
   },
+  "admin": {
+    "passwordLabel": "Mật khẩu quản trị",
+    "signIn": "Đăng nhập",
+    "signingIn": "Đang đăng nhập...",
+    "invalidPassword": "Mật khẩu không đúng.",
+    "networkError": "Lỗi mạng. Vui lòng thử lại."
+  },
   "footer": {
     "rights": "Bảo lưu mọi quyền.",
     "built_by": "Được xây dựng bởi"

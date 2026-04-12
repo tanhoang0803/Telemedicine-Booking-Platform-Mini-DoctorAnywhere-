@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useLocale } from 'next-intl'
 
 interface Appointment {
   id: string
@@ -25,6 +26,7 @@ const FILTERS = ['all', 'pending', 'confirmed', 'cancelled'] as const
 type Filter = typeof FILTERS[number]
 
 export default function AdminDashboard() {
+  const locale = useLocale()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<Filter>('pending')
@@ -192,7 +194,7 @@ export default function AdminDashboard() {
                         </div>
                       ) : appt.status === 'confirmed' && appt.roomUrl ? (
                         <a
-                          href={appt.roomUrl}
+                          href={`/${locale}/call?url=${encodeURIComponent(appt.roomUrl)}&doctor=${encodeURIComponent(appt.doctorName)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"

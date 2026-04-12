@@ -44,6 +44,12 @@ export async function PATCH(
       return NextResponse.json({ error: 'Appointment not found.' }, { status: 404 })
     }
 
+    // Look up the patient's language preference for a bilingual email
+    const patientDoc = await db
+      .collection('patients')
+      .findOne({ _id: result.patientId }, { projection: { language: 1 } })
+    const language = (patientDoc?.language ?? 'en') as 'en' | 'vi'
+
     // Notify patient by email
     sendStatusUpdate({
       to: result.patientEmail,
@@ -52,7 +58,7 @@ export async function PATCH(
       specialty: result.specialty,
       preferredDate: result.preferredDate,
       status: status as 'confirmed' | 'cancelled',
-      language: 'en',
+      language,
     })
 
     return NextResponse.json({ data: { id, status, roomUrl: roomUrl ?? undefined } })

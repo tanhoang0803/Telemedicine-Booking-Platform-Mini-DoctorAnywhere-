@@ -127,6 +127,13 @@
     "response_label": "Response time",
     "response_time": "Within 24 hours"
   },
+  "admin": {
+    "passwordLabel": "Admin Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "invalidPassword": "Invalid password.",
+    "networkError": "Network error. Please try again."
+  },
   "footer": {
     "rights": "All rights reserved.",
     "built_by": "Built by"
