@@ -40,7 +40,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Robots | ✅ Done | `app/robots.ts` — blocks /admin/ and /api/ from crawlers |
 | Vercel Analytics | ✅ Done | `@vercel/analytics` — `<Analytics />` in root layout |
 | Lighthouse ≥ 90 | ✅ Done | `next/image` in DoctorCard, `lang` attr fix via LangSetter |
-| Contentful CMS | ⏳ Phase 3 | — |
+| Contentful CMS | ✅ Done | `lib/contentful.ts` — fetchDoctors(), ISR 1hr, falls back to MOCK_DOCTORS |
 | WebRTC video | ⏳ Phase 3 | — |
 
 ---
@@ -57,7 +57,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Database   | MongoDB Atlas Free Tier (Phase 2)                        |
 | Email      | Resend (Phase 2)                                         |
 | Rate limit | `lru-cache` sliding-window (Phase 3)                     |
-| CMS        | Contentful (Phase 3)                                     |
+| CMS        | Contentful SDK v11 (Phase 3)                             |
 | Video      | WebRTC (Phase 3)                                         |
 | Hosting    | Vercel Free Tier                                         |
 

@@ -11,6 +11,7 @@
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
     "bcryptjs": "^3.0.3",
+    "contentful": "^11.12.0",
     "jose": "^5.9.6",
     "lru-cache": "^11.3.3",
     "mongodb": "^6.10.0",

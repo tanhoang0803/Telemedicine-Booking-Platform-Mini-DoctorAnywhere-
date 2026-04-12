@@ -43,7 +43,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Rate limit | lru-cache (sliding window)        | ✅ Active     |
 | Analytics  | Vercel Analytics                  | ✅ Active     |
 | Hosting    | Vercel (Free Tier)                | ✅ Deployed   |
-| CMS        | Contentful                        | ⏳ Phase 3    |
+| CMS        | Contentful SDK v11                | ✅ Integrated |
 | Video      | WebRTC                            | ⏳ Phase 3    |
 
 ---
@@ -179,6 +179,7 @@ Admin confirms or cancels
 │   ├── db.ts                         # MongoDB lazy-init connection
 │   ├── doctors.ts                    # Mock doctor data
 │   ├── email.ts                      # Resend: booking confirm + admin notify + status update
+│   ├── contentful.ts                 # Contentful client + fetchDoctors() with fallback
 │   ├── rateLimit.ts                  # LRU sliding-window rate limiter
 │   └── schemas.ts                    # Zod validation schemas
 ├── locales/en.json + vi.json
@@ -211,7 +212,7 @@ Admin confirms or cancels
 - [x] Robots — `app/robots.ts` blocking `/admin/` and `/api/` from crawlers
 - [x] Vercel Analytics — `@vercel/analytics` wired into root layout
 - [x] Lighthouse ≥ 90 — `next/image` in DoctorCard, `lang` attribute via `LangSetter`
-- [ ] Contentful CMS for doctor profiles
+- [x] Contentful CMS — `lib/contentful.ts`, ISR 1hr revalidation, MOCK_DOCTORS fallback
 - [ ] WebRTC video consultation
 
 ---
