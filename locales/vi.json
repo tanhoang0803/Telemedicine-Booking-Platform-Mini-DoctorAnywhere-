@@ -84,6 +84,7 @@
     "loading": "Đang tải lịch hẹn...",
     "loadError": "Không thể tải lịch hẹn.",
     "cancelError": "Không thể huỷ lịch hẹn.",
+    "joinCall": "Tham gia cuộc gọi video",
     "status": {
       "pending": "Chờ xác nhận",
       "confirmed": "Đã xác nhận",

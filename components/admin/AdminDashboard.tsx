@@ -11,6 +11,7 @@ interface Appointment {
   preferredDate: string
   notes: string
   status: 'pending' | 'confirmed' | 'cancelled'
+  roomUrl?: string
   createdAt: string
 }
 
@@ -53,9 +54,15 @@ export default function AdminDashboard() {
         body: JSON.stringify({ status }),
       })
       if (res.ok) {
-        setAppointments((prev) => prev.map((a) => a.id === id ? { ...a, status } : a))
-        setToast({ msg: `Appointment ${status}. Patient notified by email.`, type: status })
-        setTimeout(() => setToast({ msg: '', type: '' }), 4000)
+        const { data } = await res.json()
+        setAppointments((prev) =>
+          prev.map((a) =>
+            a.id === id ? { ...a, status, roomUrl: data.roomUrl ?? a.roomUrl } : a
+          )
+        )
+        const extra = data.roomUrl ? ' Video room created.' : ''
+        setToast({ msg: `Appointment ${status}. Patient notified by email.${extra}`, type: status })
+        setTimeout(() => setToast({ msg: '', type: '' }), 5000)
       }
     } finally {
       setUpdating(null)
@@ -183,6 +190,18 @@ export default function AdminDashboard() {
                             {updating === appt.id ? '...' : '✕'}
                           </button>
                         </div>
+                      ) : appt.status === 'confirmed' && appt.roomUrl ? (
+                        <a
+                          href={appt.roomUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M4 8a2 2 0 012-2h9a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" />
+                          </svg>
+                          Join
+                        </a>
                       ) : (
                         <span className="text-xs text-gray-300">—</span>
                       )}

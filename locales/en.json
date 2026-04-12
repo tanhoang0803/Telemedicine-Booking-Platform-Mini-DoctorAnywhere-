@@ -84,6 +84,7 @@
     "loading": "Loading appointments...",
     "loadError": "Failed to load appointments.",
     "cancelError": "Failed to cancel appointment.",
+    "joinCall": "Join Video Call",
     "status": {
       "pending": "Pending",
       "confirmed": "Confirmed",

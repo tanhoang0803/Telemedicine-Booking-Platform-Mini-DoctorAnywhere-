@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 
 interface Appointment {
@@ -11,6 +11,7 @@ interface Appointment {
   preferredDate: string
   notes: string
   status: 'pending' | 'confirmed' | 'cancelled'
+  roomUrl: string | null
   createdAt: string
 }
 
@@ -29,6 +30,7 @@ const SPECIALTY_ICONS: Record<string, string> = {
 
 export default function AppointmentDashboard() {
   const t = useTranslations('portal')
+  const locale = useLocale()
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState<string | null>(null)
@@ -169,6 +171,17 @@ export default function AppointmentDashboard() {
                     <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} />
                     {t(`status.${appt.status}`)}
                   </span>
+                  {appt.status === 'confirmed' && appt.roomUrl && (
+                    <a
+                      href={`/${locale}/call?url=${encodeURIComponent(appt.roomUrl)}&doctor=${encodeURIComponent(appt.doctorName)}`}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M4 8a2 2 0 012-2h9a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2V8z" />
+                      </svg>
+                      {t('joinCall')}
+                    </a>
+                  )}
                   {appt.status === 'pending' && (
                     <button
                       onClick={() => handleCancel(appt.id)}

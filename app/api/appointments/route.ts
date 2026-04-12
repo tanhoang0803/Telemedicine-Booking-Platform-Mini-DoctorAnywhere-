@@ -127,6 +127,7 @@ export async function GET(request: NextRequest) {
       preferredDate: a.preferredDate,
       notes: a.notes,
       status: a.status,
+      roomUrl: a.roomUrl ?? null,
       createdAt: a.createdAt,
     }))
 

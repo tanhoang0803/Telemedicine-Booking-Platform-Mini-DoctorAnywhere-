@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb'
 import { getDb } from '@/lib/db'
 import { verifyAdminRequest } from '@/lib/adminAuth'
 import { sendStatusUpdate } from '@/lib/email'
+import { createDailyRoom } from '@/lib/daily'
 
 export async function PATCH(
   request: NextRequest,
@@ -24,10 +25,18 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid appointment ID.' }, { status: 400 })
     }
 
+    // When confirming, create a Daily.co video room (no-op if DAILY_API_KEY unset)
+    const roomUrl = status === 'confirmed'
+      ? (await createDailyRoom(id))?.url ?? null
+      : null
+
     const db = await getDb()
+    const update: Record<string, unknown> = { status, updatedAt: new Date() }
+    if (roomUrl) update.roomUrl = roomUrl
+
     const result = await db.collection('appointments').findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $set: { status, updatedAt: new Date() } },
+      { $set: update },
       { returnDocument: 'after' }
     )
 
@@ -46,7 +55,7 @@ export async function PATCH(
       language: 'en',
     })
 
-    return NextResponse.json({ data: { id, status } })
+    return NextResponse.json({ data: { id, status, roomUrl: roomUrl ?? undefined } })
   } catch (err) {
     console.error('[admin appointments PATCH]', err)
     return NextResponse.json({ error: 'Server error.' }, { status: 500 })

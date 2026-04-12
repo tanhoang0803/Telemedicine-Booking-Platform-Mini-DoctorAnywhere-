@@ -44,7 +44,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Analytics  | Vercel Analytics                  | ✅ Active     |
 | Hosting    | Vercel (Free Tier)                | ✅ Deployed   |
 | CMS        | Contentful SDK v11                | ✅ Integrated |
-| Video      | WebRTC                            | ⏳ Phase 3    |
+| Video      | Daily.co (REST API + iframe)      | ✅ Integrated |
 
 ---
 
@@ -180,6 +180,7 @@ Admin confirms or cancels
 │   ├── doctors.ts                    # Mock doctor data
 │   ├── email.ts                      # Resend: booking confirm + admin notify + status update
 │   ├── contentful.ts                 # Contentful client + fetchDoctors() with fallback
+│   ├── daily.ts                      # Daily.co REST client — createDailyRoom()
 │   ├── rateLimit.ts                  # LRU sliding-window rate limiter
 │   └── schemas.ts                    # Zod validation schemas
 ├── locales/en.json + vi.json
@@ -213,7 +214,7 @@ Admin confirms or cancels
 - [x] Vercel Analytics — `@vercel/analytics` wired into root layout
 - [x] Lighthouse ≥ 90 — `next/image` in DoctorCard, `lang` attribute via `LangSetter`
 - [x] Contentful CMS — `lib/contentful.ts`, ISR 1hr revalidation, MOCK_DOCTORS fallback
-- [ ] WebRTC video consultation
+- [x] WebRTC video — Daily.co rooms created on confirm, `/call` page (iframe embed), Join buttons in portal + admin
 
 ---
 

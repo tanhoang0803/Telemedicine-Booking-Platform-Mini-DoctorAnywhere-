@@ -3,7 +3,7 @@
 **Prepared by:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
 **Last updated:** April 11, 2026
-**Current phase:** Phase 3 complete — rate limiting, SEO, Vercel Analytics, Lighthouse fixes shipped
+**Current phase:** Phase 3 complete — rate limiting, SEO, analytics, Lighthouse, Contentful CMS, WebRTC video
 
 ---
 
@@ -41,7 +41,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Vercel Analytics | ✅ Done | `@vercel/analytics` — `<Analytics />` in root layout |
 | Lighthouse ≥ 90 | ✅ Done | `next/image` in DoctorCard, `lang` attr fix via LangSetter |
 | Contentful CMS | ✅ Done | `lib/contentful.ts` — fetchDoctors(), ISR 1hr, falls back to MOCK_DOCTORS |
-| WebRTC video | ⏳ Phase 3 | — |
+| WebRTC video | ✅ Done | Daily.co — createDailyRoom(), /call page, Join buttons in portal + admin |
 
 ---
 
@@ -58,7 +58,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Email      | Resend (Phase 2)                                         |
 | Rate limit | `lru-cache` sliding-window (Phase 3)                     |
 | CMS        | Contentful SDK v11 (Phase 3)                             |
-| Video      | WebRTC (Phase 3)                                         |
+| Video      | Daily.co REST API (Phase 3)                              |
 | Hosting    | Vercel Free Tier                                         |
 
 ---
