@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 const inter = Inter({
@@ -22,9 +23,10 @@ export const metadata: Metadata = {
 // The [locale] layout sets lang via suppressHydrationWarning.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning className={inter.variable}>
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className="flex flex-col min-h-screen bg-white antialiased">
         {children}
+        <Analytics />
       </body>
     </html>
   )

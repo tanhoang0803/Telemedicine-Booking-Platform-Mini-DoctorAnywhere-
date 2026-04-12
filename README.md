@@ -22,6 +22,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 - **Route protection** — `/portal` and `/admin` guarded by middleware JWT check
 - **Rate limiting** — Sliding-window per-IP limits on login (5/min) and register (3/10min)
 - **SEO** — Per-page `generateMetadata`, OpenGraph tags, XML sitemap, robots.txt
+- **Vercel Analytics** — Page-view and performance tracking via `@vercel/analytics`
 - **Toast notifications** — Success/error feedback on key actions
 - **Responsive layout** — Mobile-first, collapsible nav
 
@@ -40,6 +41,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Backup notify | Formspree → Gmail              | ✅ Live       |
 | Validation | Zod                               | ✅ Active     |
 | Rate limit | lru-cache (sliding window)        | ✅ Active     |
+| Analytics  | Vercel Analytics                  | ✅ Active     |
 | Hosting    | Vercel (Free Tier)                | ✅ Deployed   |
 | CMS        | Contentful                        | ⏳ Phase 3    |
 | Video      | WebRTC                            | ⏳ Phase 3    |
@@ -207,10 +209,10 @@ Admin confirms or cancels
 - [x] SEO — `generateMetadata()` + OpenGraph on all public pages
 - [x] Sitemap — `app/sitemap.ts` covering all locale + route combos
 - [x] Robots — `app/robots.ts` blocking `/admin/` and `/api/` from crawlers
+- [x] Vercel Analytics — `@vercel/analytics` wired into root layout
+- [x] Lighthouse ≥ 90 — `next/image` in DoctorCard, `lang` attribute via `LangSetter`
 - [ ] Contentful CMS for doctor profiles
 - [ ] WebRTC video consultation
-- [ ] Vercel Analytics
-- [ ] Lighthouse score ≥ 90
 
 ---
 

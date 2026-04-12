@@ -3,7 +3,7 @@
 **Prepared by:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
 **Last updated:** April 11, 2026
-**Current phase:** Phase 3 in progress — rate limiting live; SEO (sitemap, robots, OpenGraph) shipped
+**Current phase:** Phase 3 complete — rate limiting, SEO, Vercel Analytics, Lighthouse fixes shipped
 
 ---
 
@@ -38,6 +38,8 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | SEO metadata | ✅ Done | `generateMetadata` + OpenGraph on all public pages |
 | Sitemap | ✅ Done | `app/sitemap.ts` — all locale+route combos |
 | Robots | ✅ Done | `app/robots.ts` — blocks /admin/ and /api/ from crawlers |
+| Vercel Analytics | ✅ Done | `@vercel/analytics` — `<Analytics />` in root layout |
+| Lighthouse ≥ 90 | ✅ Done | `next/image` in DoctorCard, `lang` attr fix via LangSetter |
 | Contentful CMS | ⏳ Phase 3 | — |
 | WebRTC video | ⏳ Phase 3 | — |
 

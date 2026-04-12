@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 import LayoutShell from '@/components/layout/LayoutShell'
 import { UserProvider } from '@/components/auth/UserContext'
+import LangSetter from '@/components/layout/LangSetter'
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -30,6 +31,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages}>
+      <LangSetter locale={locale} />
       <UserProvider>
         <LayoutShell>{children}</LayoutShell>
       </UserProvider>

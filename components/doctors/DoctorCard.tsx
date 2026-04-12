@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import type { Doctor } from '@/lib/doctors'
@@ -15,13 +16,12 @@ export default function DoctorCard({ doctor }: DoctorCardProps) {
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 flex flex-col gap-3 hover:shadow-md transition">
       <div className="flex items-center gap-4">
         <div className="w-16 h-16 rounded-full overflow-hidden bg-blue-100 flex-shrink-0">
-          <img
+          <Image
             src={doctor.photo || '/images/doctor-placeholder.svg'}
             alt={doctor.name}
+            width={64}
+            height={64}
             className="w-full h-full object-cover"
-            onError={(e) => {
-              ;(e.target as HTMLImageElement).src = '/images/doctor-placeholder.svg'
-            }}
           />
         </div>
         <div>
