@@ -9,6 +9,22 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 
 ---
 
+## Status & Stack
+
+[![CI](https://github.com/tanhoang0803/Telemedicine-Booking-Platform-Mini-DoctorAnywhere-/actions/workflows/ci.yml/badge.svg)](https://github.com/tanhoang0803/Telemedicine-Booking-Platform-Mini-DoctorAnywhere-/actions/workflows/ci.yml)
+[![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://telemedicine-booking-platform-mini.vercel.app/en)
+
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?logo=tailwindcss)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb)
+![Resend](https://img.shields.io/badge/Email-Resend-black?logo=mail.ru)
+![Daily.co](https://img.shields.io/badge/Video-Daily.co-6c3ceb?logo=webrtc)
+![Contentful](https://img.shields.io/badge/CMS-Contentful-2478cc?logo=contentful)
+![GitHub Actions](https://img.shields.io/badge/CI-GitHub_Actions-2088ff?logo=github-actions)
+
+---
+
 ## Live Features
 
 - **Bilingual UI** — Full Vietnamese / English with live EN | VI switcher
