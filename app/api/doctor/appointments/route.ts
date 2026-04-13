@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     const data = appointments.map((a) => ({
       id: a._id.toString(),
       patientName: a.patientName,
+      patientEmail: a.patientEmail,
       preferredDate: a.preferredDate,
       notes: a.notes,
       status: a.status,
