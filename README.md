@@ -4,7 +4,7 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 
 **Author:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
-**Last updated:** April 13, 2026 (Phase 4 — Doctor portal)
+**Last updated:** April 13, 2026 (Project complete — fully deployed and tested)
 **Live:** https://telemedicine-booking-platform-mini.vercel.app/en
 
 ---
@@ -255,6 +255,14 @@ Admin cancels
 - [x] Join Call button for all confirmed appointments (active/grayed by roomUrl)
 - [x] Middleware guard on `/doctor` routes
 - [x] No site Header/Footer on doctor pages (own layout segment)
+
+### Deployment ✅ (Apr 13)
+- [x] Vercel production deployment with all environment variables configured
+- [x] MongoDB Atlas — direct connection string (non-SRV) for compatibility
+- [x] Resend email — live and delivering to verified addresses
+- [x] Daily.co — video rooms created on appointment confirmation
+- [x] Contentful CMS — connected with fallback to mock doctors
+- [x] End-to-end tested: book → confirm → video call flow working
 
 ---
 

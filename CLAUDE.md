@@ -3,7 +3,7 @@
 **Prepared by:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
 **Last updated:** April 13, 2026
-**Current phase:** Phase 4 complete — Doctor portal (auth, dashboard, appointments, video join)
+**Current phase:** ✅ Project complete — all phases done, fully deployed and tested on Vercel
 
 ---
 
@@ -263,6 +263,7 @@ Next.js page files may only export:
 | Phase 2 | Apr 11     | ✅ Done            | MongoDB, JWT auth, patient portal, admin panel, triple notifications |
 | Phase 3 | Apr 12–13  | ✅ Done            | Rate limiting, WebRTC, Contentful, analytics, SEO, Lighthouse |
 | Phase 4 | Apr 13     | ✅ Done            | Doctor portal — JWT auth, dashboard, appointments, Join Call |
+| Deployment | Apr 13  | ✅ Done            | Vercel + MongoDB Atlas + Resend + Daily.co + Contentful all configured and tested |
 
 ---
 
