@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Lint & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # Public vars — safe to hardcode
+          NEXT_PUBLIC_APP_URL: https://telemedicine-booking-platform-mini.vercel.app
+          NEXT_PUBLIC_FORMSPREE_ID: xwvwdqvp
+
+          # Runtime-only vars — dummy values are fine for build check
+          # (API routes are never executed during next build)
+          MONGODB_URI: mongodb://localhost:27017/telemedicine
+          JWT_SECRET: ci-dummy-secret-not-used-at-build-time
+          ADMIN_PASSWORD: ci-dummy
+          ADMIN_EMAIL: ci@example.com
+          ADMIN_URL: https://telemedicine-booking-platform-mini.vercel.app/en/admin
+          RESEND_API_KEY: re_dummy
+          RESEND_FROM_EMAIL: onboarding@resend.dev
+          DAILY_API_KEY: dummy
+          CONTENTFUL_SPACE_ID: dummy
+          CONTENTFUL_ACCESS_TOKEN: dummy
+          CONTENTFUL_PREVIEW_TOKEN: dummy
