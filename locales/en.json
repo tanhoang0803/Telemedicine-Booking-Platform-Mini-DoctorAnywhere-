@@ -127,6 +127,33 @@
     "response_label": "Response time",
     "response_time": "Within 24 hours"
   },
+  "doctorPortal": {
+    "welcome": "Welcome, Doctor",
+    "myAppointments": "My Appointments",
+    "noAppointments": "No appointments yet",
+    "noAppointmentsDesc": "Appointments booked with you will appear here.",
+    "statsTotal": "Total",
+    "statsPending": "Pending",
+    "statsConfirmed": "Confirmed",
+    "patient": "Patient",
+    "date": "Date",
+    "joinCall": "Join Call",
+    "loadError": "Failed to load appointments.",
+    "signOut": "Sign Out",
+    "register": "Register as Doctor",
+    "registerSubtitle": "Create your doctor account to access your appointment dashboard.",
+    "loginSubtitle": "Sign in to your doctor dashboard.",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "specialtyLabel": "Specialty",
+    "registerSuccess": "Account created. Welcome!",
+    "loginSuccess": "Signed in successfully.",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled"
+    }
+  },
   "admin": {
     "passwordLabel": "Admin Password",
     "signIn": "Sign In",

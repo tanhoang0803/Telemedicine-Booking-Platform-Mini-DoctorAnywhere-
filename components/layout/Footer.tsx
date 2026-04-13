@@ -19,6 +19,7 @@ export default function Footer() {
           <Link href="/doctors" className="hover:text-blue-600 transition">Doctors</Link>
           <Link href="/booking" className="hover:text-blue-600 transition">Book</Link>
           <Link href="/contact" className="hover:text-blue-600 transition">Contact</Link>
+          <Link href="/doctor/login" className="hover:text-blue-600 transition">Doctor Portal</Link>
         </nav>
       </div>
     </footer>

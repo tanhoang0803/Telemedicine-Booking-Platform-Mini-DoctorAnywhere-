@@ -27,6 +27,20 @@ export const AppointmentSchema = z.object({
   notes: z.string().max(500).optional(),
 })
 
+export const DoctorRegisterSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(100),
+  specialtyKey: z.string().min(1, 'Specialty is required'),
+})
+
+export const DoctorLoginSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(1, 'Password is required'),
+})
+
 export type RegisterInput = z.infer<typeof RegisterSchema>
 export type LoginInput = z.infer<typeof LoginSchema>
 export type AppointmentInput = z.infer<typeof AppointmentSchema>
+export type DoctorRegisterInput = z.infer<typeof DoctorRegisterSchema>
+export type DoctorLoginInput = z.infer<typeof DoctorLoginSchema>

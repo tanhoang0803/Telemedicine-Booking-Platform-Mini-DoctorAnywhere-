@@ -127,6 +127,33 @@
     "response_label": "Thời gian phản hồi",
     "response_time": "Trong vòng 24 giờ"
   },
+  "doctorPortal": {
+    "welcome": "Xin chào, Bác sĩ",
+    "myAppointments": "Lịch hẹn của tôi",
+    "noAppointments": "Chưa có lịch hẹn nào",
+    "noAppointmentsDesc": "Các lịch hẹn được đặt với bạn sẽ hiển thị ở đây.",
+    "statsTotal": "Tổng cộng",
+    "statsPending": "Chờ xác nhận",
+    "statsConfirmed": "Đã xác nhận",
+    "patient": "Bệnh nhân",
+    "date": "Ngày",
+    "joinCall": "Tham gia cuộc gọi",
+    "loadError": "Không thể tải lịch hẹn.",
+    "signOut": "Đăng xuất",
+    "register": "Đăng ký tài khoản bác sĩ",
+    "registerSubtitle": "Tạo tài khoản bác sĩ để truy cập bảng điều khiển lịch hẹn.",
+    "loginSubtitle": "Đăng nhập vào bảng điều khiển của bạn.",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "noAccount": "Chưa có tài khoản?",
+    "specialtyLabel": "Chuyên khoa",
+    "registerSuccess": "Tài khoản đã được tạo. Chào mừng!",
+    "loginSuccess": "Đăng nhập thành công.",
+    "status": {
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "cancelled": "Đã huỷ"
+    }
+  },
   "admin": {
     "passwordLabel": "Mật khẩu quản trị",
     "signIn": "Đăng nhập",

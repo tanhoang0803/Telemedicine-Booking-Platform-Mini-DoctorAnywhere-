@@ -7,6 +7,8 @@ const intlMiddleware = createMiddleware(routing)
 
 const PROTECTED_PATHS = ['/portal']
 const ADMIN_PATHS = ['/admin']
+const DOCTOR_PATHS = ['/doctor']
+const DOCTOR_PUBLIC = ['/doctor/login', '/doctor/register']
 
 function getSecret() {
   return new TextEncoder().encode(process.env.JWT_SECRET ?? '')
@@ -57,6 +59,28 @@ export async function middleware(request: NextRequest) {
     }
     if (!isAdmin) {
       return NextResponse.redirect(new URL(`/${locale}/admin/login`, request.url))
+    }
+  }
+
+  // Doctor-protected routes (/doctor) — skip /doctor/login and /doctor/register
+  const isDoctorRoute = routing.locales.some((l) =>
+    DOCTOR_PATHS.some((p) => pathname === `/${l}${p}` || pathname.startsWith(`/${l}${p}/`))
+  )
+  const isDoctorPublic = routing.locales.some((l) =>
+    DOCTOR_PUBLIC.some((p) => pathname === `/${l}${p}`)
+  )
+
+  if (isDoctorRoute && !isDoctorPublic) {
+    const token = request.cookies.get('doctor_session')?.value
+    let isDoctor = false
+    if (token) {
+      try {
+        const { payload } = await jwtVerify(token, getSecret(), { algorithms: ['HS256'] })
+        isDoctor = payload.role === 'doctor'
+      } catch { isDoctor = false }
+    }
+    if (!isDoctor) {
+      return NextResponse.redirect(new URL(`/${locale}/doctor/login`, request.url))
     }
   }
 
