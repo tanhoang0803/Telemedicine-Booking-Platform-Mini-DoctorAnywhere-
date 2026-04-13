@@ -2,8 +2,8 @@
 
 **Prepared by:** TanQHoang (hoangquoctan.1996@gmail.com)
 **Started:** April 10, 2026
-**Last updated:** April 11, 2026
-**Current phase:** Phase 3 complete — rate limiting, SEO, analytics, Lighthouse, Contentful CMS, WebRTC video
+**Last updated:** April 13, 2026
+**Current phase:** Phase 4 complete — Doctor portal (auth, dashboard, appointments, video join)
 
 ---
 
@@ -42,6 +42,8 @@ A free, bilingual (Vietnamese/English) telemedicine platform enabling patients t
 | Lighthouse ≥ 90 | ✅ Done | `next/image` in DoctorCard, `lang` attr fix via LangSetter |
 | Contentful CMS | ✅ Done | `lib/contentful.ts` — fetchDoctors(), ISR 1hr, falls back to MOCK_DOCTORS |
 | WebRTC video | ✅ Done | Daily.co — createDailyRoom(), /call page, Join buttons in portal + admin |
+| Doctor portal | ✅ Done | /doctor/register, /doctor/login, /doctor dashboard — own JWT cookie, no site nav |
+| Doctor dashboard | ✅ Done | Filter tabs + table (same style as admin), Join Call button for confirmed appts |
 
 ---
 
@@ -148,30 +150,45 @@ telemedicine-booking/
 │   │   ├── page.tsx                  # Home
 │   │   ├── booking/page.tsx          # Booking form (reads ?doctorId from searchParams)
 │   │   ├── doctors/page.tsx          # Doctor directory (MOCK_DOCTORS from lib/doctors.ts)
-│   │   ├── portal/page.tsx           # Patient portal (Phase 2 placeholder)
+│   │   ├── portal/page.tsx           # Patient portal
 │   │   ├── contact/page.tsx
+│   │   ├── call/page.tsx             # Video call page (Daily.co iframe)
+│   │   ├── doctor/layout.tsx         # Suppresses site Header/Footer for doctor routes
+│   │   ├── doctor/page.tsx           # Doctor dashboard (force-dynamic, auth-gated)
+│   │   ├── doctor/login/page.tsx
+│   │   ├── doctor/register/page.tsx
 │   │   ├── loading.tsx
 │   │   └── not-found.tsx
 │   └── {booking,doctors,portal,contact}/page.tsx  # redirect → /en/* fallbacks
 ├── components/
-│   ├── admin/AdminDashboard.tsx      # 'use client' — table + filter tabs + confirm/cancel
+│   ├── admin/AdminDashboard.tsx      # 'use client' — table + filter tabs + confirm/cancel + Join Call
 │   ├── admin/AdminLoginForm.tsx      # 'use client' — admin password form
 │   ├── admin/AdminLogoutButton.tsx   # 'use client' — clears admin_session cookie
 │   ├── auth/LoginForm.tsx            # 'use client' — login + toast on success
 │   ├── auth/RegisterForm.tsx         # 'use client' — register form
 │   ├── auth/UserContext.tsx          # 'use client' — global user state, useUser()
+│   ├── doctor/DoctorDashboard.tsx    # 'use client' — filter tabs + table + Join Call
+│   ├── doctor/DoctorLoginForm.tsx    # 'use client' — doctor login form
+│   ├── doctor/DoctorRegisterForm.tsx # 'use client' — doctor register (name, email, password, specialty)
+│   ├── doctor/DoctorLogoutButton.tsx # 'use client' — clears doctor_session cookie
 │   ├── layout/Header.tsx             # 'use client' — auth-aware nav + logout
-│   ├── layout/Footer.tsx             # Locale-aware links
+│   ├── layout/Footer.tsx             # Locale-aware links (incl. Doctor Portal)
+│   ├── layout/LayoutShell.tsx        # 'use client' — hides Header/Footer on /admin/* and /doctor/*
 │   ├── booking/BookingForm.tsx       # 'use client' — API-backed, auth-gated, pre-fill
 │   ├── doctors/DoctorCard.tsx        # 'use client' — passes doctorName+specialty in URL
 │   ├── portal/AppointmentDashboard.tsx # 'use client' — live stats + appointment cards
+│   ├── video/VideoCallFrame.tsx      # 'use client' — Daily.co iframe + Leave Call button
 │   └── ui/Toast.tsx                  # 'use client' — slide-up notification
 ├── lib/
 │   ├── adminAuth.ts                  # verifyAdminRequest() — checks admin_session JWT
+│   ├── doctorAuth.ts                 # verifyDoctorRequest(), getDoctorSession() — doctor_session JWT
 │   ├── doctors.ts                    # Doctor type + MOCK_DOCTORS (5 entries)
 │   ├── db.ts                         # MongoDB lazy-init connection
 │   ├── auth.ts                       # JWT sign/verify/session + sessionCookieOptions
-│   ├── schemas.ts                    # Zod: RegisterSchema, LoginSchema, AppointmentSchema
+│   ├── daily.ts                      # Daily.co REST client — createDailyRoom()
+│   ├── contentful.ts                 # Contentful client — fetchDoctors(), ISR 1hr, MOCK fallback
+│   ├── rateLimit.ts                  # LRU sliding-window rate limiter
+│   ├── schemas.ts                    # Zod: RegisterSchema, LoginSchema, AppointmentSchema, DoctorSchemas
 │   └── email.ts                      # Resend: booking confirm + admin notify + status update
 ├── locales/
 │   ├── en.json                       # English translations
@@ -244,7 +261,8 @@ Next.js page files may only export:
 | Phase 0 | Apr 10     | ✅ Done            | Foundation, build passing |
 | Phase 1 | Apr 10     | ✅ Done            | i18n, static pages, Formspree, Vercel deploy |
 | Phase 2 | Apr 11     | ✅ Done            | MongoDB, JWT auth, patient portal, admin panel, triple notifications |
-| Phase 3 | Month 2+   | ⏳ Next            | Rate limiting, WebRTC, Contentful, analytics, SEO |
+| Phase 3 | Apr 12–13  | ✅ Done            | Rate limiting, WebRTC, Contentful, analytics, SEO, Lighthouse |
+| Phase 4 | Apr 13     | ✅ Done            | Doctor portal — JWT auth, dashboard, appointments, Join Call |
 
 ---
 
