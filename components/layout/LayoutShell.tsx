@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer'
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const segments = useSelectedLayoutSegments()
-  const isAdmin = segments.includes('admin')
+  const isAdmin = segments.includes('admin') || segments.includes('doctor')
 
   return (
     <>
